@@ -8,7 +8,7 @@ target/
 .env.local
 
 ### IntelliJ IDEA ###
-.idea/:WWQ
+.idea/
 *.iws
 *.iml
 *.ipr
