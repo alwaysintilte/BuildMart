@@ -9,6 +9,5 @@ public class BuildMartApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BuildMartApplication.class, args);
-		System.out.println("user.dir: " + System.getProperty("user.dir"));
 	}
 }
