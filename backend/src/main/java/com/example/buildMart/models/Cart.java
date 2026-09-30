@@ -1,27 +1,29 @@
 package com.example.buildMart.models;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.List;
-import java.util.Map;
 
+@Entity
+@Table(name = "carts")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Cart {
-    private Map<String, Integer> productQuantity;
-    private List<Product> products;
-    public Cart(){
-        productQuantity = new HashMap<>();
-        products = new ArrayList<>();
-    }
 
-    public Map<String, Integer> getProductQuantity() {
-        return productQuantity;
-    }
-    public List<Product> getProducts() {
-        return products;
-    }
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public void addProduct(Product product, Integer quantity){
-        products.add(product);
-        productQuantity.put(product.getId(),quantity);
-    }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
+
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartItem> items;
 }

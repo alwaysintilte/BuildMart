@@ -1,44 +1,29 @@
 package com.example.buildMart.models;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Document(collection = "promocodes")
+
+@Entity
+@Table(name = "promo_codes")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PromoCode {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
     private String code;
-    private Double value;
 
-    public PromoCode() {}
+    @Column(name = "discount_percentage", nullable = false)
+    private Integer discountPercentage;
 
-    public PromoCode(String id, String code, Double value) {
-        this.id = id;
-        this.code = code;
-        this.value = value;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public Double getValue() {
-        return value;
-    }
-
-    public void setValue(Double value) {
-        this.value = value;
-    }
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
 }

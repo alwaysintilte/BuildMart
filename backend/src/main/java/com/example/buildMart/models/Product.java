@@ -1,117 +1,54 @@
 package com.example.buildMart.models;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
-@Document(collection = "products")
+@Entity
+@Table(name = "products")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product {
+
     @Id
-    private String id;
-    private String name;
-    private String category;
-    private String image;
-    private Double rating;
-    private Double price;
-    private Double discount;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String title;
+
     private String description;
-    private Map<String,String> technicalSpecifications;
-    private List<String> relatedProducts;
 
-    public Product() {}
+    @Column(nullable = false)
+    private BigDecimal price;
 
-    public Product(String id, String name, String category, String image, Double rating, Double price, Double discount, String description, Map<String, String> technicalSpecifications, List<String> relatedProducts) {
-        this.id = id;
-        this.name = name;
-        this.category = category;
-        this.image = image;
-        this.rating = rating;
-        this.price = price;
-        this.discount = discount;
-        this.description = description;
-        this.technicalSpecifications = technicalSpecifications;
-        this.relatedProducts = relatedProducts;
-    }
+    private Double rating = 0.0;
 
-    public String getId() {
-        return id;
-    }
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "product_images",
+            joinColumns = @JoinColumn(name = "product_id")
+    )
+    @Column(name = "image_url", nullable = false)
+    private List<String> images;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+    @Column(name = "stock_quantity", nullable = false)
+    private Integer stockQuantity = 0;
 
-    public String getImage() {
-        return image;
-    }
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategories(String category) {
-        this.category = category;
-    }
-
-    public Double getRating() {
-        return rating;
-    }
-
-    public void setRating(Double rating) {
-        this.rating = rating;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public Double getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(Double discount) {
-        this.discount = discount;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Map<String, String> getTechnicalSpecifications() {
-        return technicalSpecifications;
-    }
-
-    public void setTechnicalSpecifications(Map<String, String> technicalSpecifications) {
-        this.technicalSpecifications = technicalSpecifications;
-    }
-
-    public List<String> getRelatedProducts() {
-        return relatedProducts;
-    }
-
-    public void setRelatedProducts(List<String> relatedProducts) {
-        this.relatedProducts = relatedProducts;
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
     }
 }
