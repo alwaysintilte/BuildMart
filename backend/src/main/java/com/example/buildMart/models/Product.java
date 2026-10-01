@@ -1,5 +1,6 @@
 package com.example.buildMart.models;
 
+import com.example.buildMart.models.enums.ProductCategory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import org.springframework.data.annotation.Id;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,20 +28,29 @@ public class Product {
     @Column(nullable = false)
     private String title;
 
-    private String description;
+    private Double rating = 0.0;
 
     @Column(nullable = false)
     private BigDecimal price;
 
-    private Double rating = 0.0;
+    private Integer discount;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "product_category")
+    private ProductCategory productCategory;
+
+    private String description;
+
+    @ElementCollection
     @CollectionTable(
             name = "product_images",
             joinColumns = @JoinColumn(name = "product_id")
     )
-    @Column(name = "image_url", nullable = false)
+    @Column(name = "image_url")
     private List<String> images;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TechnicalSpecification> specifications;
 
     @Column(name = "stock_quantity", nullable = false)
     private Integer stockQuantity = 0;
