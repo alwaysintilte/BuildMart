@@ -1,40 +1,67 @@
 package com.example.buildMart.services;
 
-import com.example.buildMart.models.Category;
+import com.example.buildMart.dtos.responses.ProductResponse;
+import com.example.buildMart.mappers.interfaces.ProductMapper;
 import com.example.buildMart.models.Product;
-import com.example.buildMart.repositories.ProductCustomRepository;
-import com.example.buildMart.repositories.interfaces.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.buildMart.repositories.ProductRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class ProductService {
-    private final ProductRepository productRepository;
-    private final ProductCustomRepository productCustomRepository;
-    @Autowired
-    public ProductService(ProductRepository productRepository, ProductCustomRepository productCustomRepository){
-        this.productRepository = productRepository;
-        this.productCustomRepository = productCustomRepository;
+
+    private ProductRepository productRepository;
+
+    private ProductMapper productMapper;
+
+    @Transactional(readOnly = true)
+    public Page<ProductResponse> findAll(Integer page, Integer limit, String search, BigDecimal minPrice, BigDecimal maxPrice, Double minRating, String sortBy, String order){
+        if(minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0){
+            throw new IllegalArgumentException("min_price must be <= max_price");
+        }
+        Sort sort = Sort.by(Sort.Direction.fromString(order), sortBy);
+        Pageable pageable = PageRequest.of(page, limit, sort);
+        Page<Product> products = productRepository.findAll(search, minPrice, maxPrice, minRating, pageable);
+        List<Long> ids = products.map(product -> product.getId()).toList();
+        if(!ids.isEmpty()){
+            productRepository.findAllWithImagesByIdsIn(ids);
+            productRepository.findAllWithSpecificationsByIdsIn(ids);
+        }
+        Page<ProductResponse> productResponses = products.map(product -> productMapper.toDto(product));
+        return productResponses;
     }
-    public Page<Product> findAllByPage(Integer page, Integer size, String sort){
-        return productCustomRepository.findAllByPage(page, size, sort);
+
+    public void deleteById(Long id){
+        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        productRepository.deleteById(id);
     }
-    public Optional<Product> findById(String id){
-        return productRepository.findById(id);
+
+    public ProductResponse findById(Long id){
+        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        ProductResponse productResponse = productMapper.toDto(product);
+        return productResponse;
     }
-    public List<Category> findAllCategories(){
-        return productCustomRepository.findAllCategories();
-    }
-    public List<Product> findByDiscount(){
-        return  productCustomRepository.findByDiscount();
-    }
-    public Page<Product> findAllByParams(Float rating, Float minPrice, Float maxPrice,  String category, Integer page, Integer size, String sort){
-        return productCustomRepository.findByParams(rating, minPrice, maxPrice,  category, page, size, sort);
+
+    @Transactional(readOnly = true)
+    public Page<ProductResponse> findByDiscount(Integer page, Integer limit, Integer minDiscount, String sortBy, String order){
+        Sort sort = Sort.by(Sort.Direction.fromString(order), sortBy);
+        Pageable pageable = PageRequest.of(page, limit, sort);
+        Page<Product> products = productRepository.findByDiscountGreaterThan(minDiscount, pageable);
+        List<Long> ids = products.map(product -> product.getId()).toList();
+        if(!ids.isEmpty()){
+            productRepository.findAllWithImagesByIdsIn(ids);
+            productRepository.findAllWithSpecificationsByIdsIn(ids);
+        }
+        Page<ProductResponse> productResponses = products.map(product -> productMapper.toDto(product));
+        return productResponses;
     }
 }
