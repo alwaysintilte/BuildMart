@@ -3,6 +3,7 @@ package com.example.buildMart.controllers;
 import com.example.buildMart.dtos.requests.UserAuthRequest;
 import com.example.buildMart.dtos.responses.JwtTokenResponse;
 import com.example.buildMart.services.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +17,13 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<Void> registerUser(@RequestBody UserAuthRequest userAuthRequest){
+    public ResponseEntity<Void> registerUser(@Valid @RequestBody UserAuthRequest userAuthRequest){
         userService.registerUser(userAuthRequest);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtTokenResponse> loginUser(@RequestBody UserAuthRequest userAuthRequest){
+    public ResponseEntity<JwtTokenResponse> loginUser(@Valid @RequestBody UserAuthRequest userAuthRequest){
         return new ResponseEntity<>(userService.loginUser(userAuthRequest), HttpStatus.CREATED);
     }
 }

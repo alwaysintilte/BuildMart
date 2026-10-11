@@ -8,6 +8,7 @@ import com.example.buildMart.models.enums.Role;
 import com.example.buildMart.repositories.UserRepository;
 import com.example.buildMart.security.JwtService;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -30,14 +32,20 @@ public class UserService {
 
     private AuthenticationManager authenticationManager;
 
+    @Transactional
     public void registerUser(UserAuthRequest userAuthRequest){
         userRepository.findByEmail(userAuthRequest.getEmail()).ifPresent(u -> {throw new RuntimeException("User already exists");});
         User user = userMapper.toEntity(userAuthRequest);
         user.setPasswordHash(passwordEncoder.encode(userAuthRequest.getPassword()));
         user.setRole(Role.CUSTOMER);
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("User already exists");
+        }
     }
 
+    @Transactional(readOnly = true)
     public JwtTokenResponse loginUser(UserAuthRequest userAuthRequest){
         Authentication authentication;
         try {
@@ -48,5 +56,10 @@ public class UserService {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String jwt = jwtService.generateToken(userDetails);
         return new JwtTokenResponse(jwt);
+    }
+
+    public User findByEmailEntity(String email){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        return user;
     }
 }

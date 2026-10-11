@@ -26,7 +26,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE p.id IN :ids")
     List<Product> findAllWithSpecificationsByIdsIn(@Param("ids") List<Long> ids);
 
-    @EntityGraph(attributePaths = {"specifications", "images"})
     Optional<Product> findById(Long id);
 
     Page<Product> findByDiscountGreaterThan(Integer minDiscount, Pageable pageable);

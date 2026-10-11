@@ -60,13 +60,13 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable Long id){
+    public ResponseEntity<Void> deleteById(@PathVariable @Positive Long id){
         productService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<ProductResponse> findById(@PathVariable Long id){
+    public ResponseEntity<ProductResponse> findById(@PathVariable @Positive Long id){
         return new ResponseEntity<>(productService.findById(id), HttpStatus.OK);
     }
 

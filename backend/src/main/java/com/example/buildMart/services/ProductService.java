@@ -40,15 +40,45 @@ public class ProductService {
         return productResponses;
     }
 
+    @Transactional(readOnly = true)
+    public Page<Product> findAllEntities(Integer page, Integer limit, String search, BigDecimal minPrice, BigDecimal maxPrice, Double minRating, String sortBy, String order){
+        if(minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0){
+            throw new IllegalArgumentException("min_price must be <= max_price");
+        }
+        Sort sort = Sort.by(Sort.Direction.fromString(order), sortBy);
+        Pageable pageable = PageRequest.of(page, limit, sort);
+        Page<Product> products = productRepository.findAll(search, minPrice, maxPrice, minRating, pageable);
+        List<Long> ids = products.map(product -> product.getId()).toList();
+        if(!ids.isEmpty()){
+            productRepository.findAllWithImagesByIdsIn(ids);
+            productRepository.findAllWithSpecificationsByIdsIn(ids);
+        }
+        return products;
+    }
+
+    @Transactional
     public void deleteById(Long id){
-        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
         productRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public ProductResponse findById(Long id){
-        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        List<Long> ids = List.of(product.getId());
+        productRepository.findAllWithImagesByIdsIn(ids);
+        productRepository.findAllWithSpecificationsByIdsIn(ids);
         ProductResponse productResponse = productMapper.toDto(product);
         return productResponse;
+    }
+
+    @Transactional(readOnly = true)
+    public Product findByIdEntity(Long id){
+        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        List<Long> ids = List.of(product.getId());
+        productRepository.findAllWithImagesByIdsIn(ids);
+        productRepository.findAllWithSpecificationsByIdsIn(ids);
+        return product;
     }
 
     @Transactional(readOnly = true)
@@ -63,5 +93,18 @@ public class ProductService {
         }
         Page<ProductResponse> productResponses = products.map(product -> productMapper.toDto(product));
         return productResponses;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Product> findByDiscountEntity(Integer page, Integer limit, Integer minDiscount, String sortBy, String order){
+        Sort sort = Sort.by(Sort.Direction.fromString(order), sortBy);
+        Pageable pageable = PageRequest.of(page, limit, sort);
+        Page<Product> products = productRepository.findByDiscountGreaterThan(minDiscount, pageable);
+        List<Long> ids = products.map(product -> product.getId()).toList();
+        if(!ids.isEmpty()){
+            productRepository.findAllWithImagesByIdsIn(ids);
+            productRepository.findAllWithSpecificationsByIdsIn(ids);
+        }
+        return products;
     }
 }
