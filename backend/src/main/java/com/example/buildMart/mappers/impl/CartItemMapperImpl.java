@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -18,7 +19,7 @@ public class CartItemMapperImpl implements CartItemMapper {
     @Override
     public CartItemResponse toDto(CartItem cartItem) {
         if(cartItem == null){
-            return null;
+            return new CartItemResponse(null, 0, BigDecimal.ZERO);
         }
         ProductResponse productResponse = productMapper.toDto(cartItem.getProduct());
         Integer quantity = cartItem.getQuantity();
@@ -30,7 +31,7 @@ public class CartItemMapperImpl implements CartItemMapper {
     @Override
     public List<CartItemResponse> toDtoList(List<CartItem> cartItems) {
         if(cartItems == null){
-            return null;
+            return new ArrayList<>();
         }
         List<CartItemResponse> list = cartItems.stream().map(cartItem -> toDto(cartItem)).toList();
         return list;
