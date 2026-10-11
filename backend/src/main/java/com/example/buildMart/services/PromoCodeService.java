@@ -1,20 +1,18 @@
 package com.example.buildMart.services;
 
 import com.example.buildMart.models.PromoCode;
-import com.example.buildMart.repositories.interfaces.PromoCodeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.buildMart.repositories.PromoCodeRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
+@AllArgsConstructor
 public class PromoCodeService {
-    private final PromoCodeRepository promoCodeRepository;
-    @Autowired
-    public PromoCodeService(PromoCodeRepository promoCodeRepository){
-        this.promoCodeRepository = promoCodeRepository;
-    }
-    public Optional<PromoCode> findByCode(String code){
-        return promoCodeRepository.findByCode(code);
+
+    private PromoCodeRepository promoCodeRepository;
+
+    public PromoCode findByCodeEntity(String code){
+        PromoCode promoCode = promoCodeRepository.findByCode(code).orElseThrow(() -> new RuntimeException("Promocode not found"));
+        return promoCode;
     }
 }
