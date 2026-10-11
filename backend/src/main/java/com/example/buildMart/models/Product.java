@@ -6,11 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,6 +19,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLDelete(sql = "UPDATE products SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 public class Product {
 
     @Id
@@ -41,13 +43,8 @@ public class Product {
 
     private String description;
 
-    @ElementCollection
-    @CollectionTable(
-            name = "product_images",
-            joinColumns = @JoinColumn(name = "product_id")
-    )
-    @Column(name = "image_url")
-    private List<String> images;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductImage> images;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TechnicalSpecification> specifications;
@@ -57,6 +54,9 @@ public class Product {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
 
     @PrePersist
     protected void onCreate() {

@@ -7,7 +7,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "cart_items")
+@Table(
+        name = "cart_items",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_cart_items_cart_product",
+                columnNames = {"cart_id", "product_id"}
+        )
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,7 +28,7 @@ public class CartItem {
     @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
