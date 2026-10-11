@@ -1,9 +1,10 @@
 package com.example.buildMart.dtos.responses;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-public record ProductResponse(
+public record ProductResponse (
     Long id,
     String title,
     Double rating,
@@ -13,4 +14,4 @@ public record ProductResponse(
     String description,
     List<String> images,
     List<TechnicalSpecificationResponse> specifications
-) {}
+) implements Serializable {}
