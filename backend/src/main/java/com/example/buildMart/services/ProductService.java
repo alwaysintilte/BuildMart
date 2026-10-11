@@ -5,6 +5,9 @@ import com.example.buildMart.mappers.interfaces.ProductMapper;
 import com.example.buildMart.models.Product;
 import com.example.buildMart.repositories.ProductRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +26,10 @@ public class ProductService {
 
     private ProductMapper productMapper;
 
+    @Cacheable(
+            value = "products_catalog",
+            key = "{#page, #limit, #search, #minPrice, #maxPrice, #minRating, #sortBy, #order}"
+    )
     @Transactional(readOnly = true)
     public Page<ProductResponse> findAll(Integer page, Integer limit, String search, BigDecimal minPrice, BigDecimal maxPrice, Double minRating, String sortBy, String order){
         if(minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0){
@@ -56,12 +63,18 @@ public class ProductService {
         return products;
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "product_item", key = "#id"),
+            @CacheEvict(value = "products_catalog", allEntries = true),
+            @CacheEvict(value = "products_discount", allEntries = true)
+    })
     @Transactional
     public void deleteById(Long id){
         Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
         productRepository.deleteById(id);
     }
 
+    @Cacheable(value = "product_item", key = "#id")
     @Transactional(readOnly = true)
     public ProductResponse findById(Long id){
         Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
@@ -81,6 +94,10 @@ public class ProductService {
         return product;
     }
 
+    @Cacheable(
+            value = "products_discount",
+            key = "{#page, #limit, #minDiscount, #sortBy, #order}"
+    )
     @Transactional(readOnly = true)
     public Page<ProductResponse> findByDiscount(Integer page, Integer limit, Integer minDiscount, String sortBy, String order){
         Sort sort = Sort.by(Sort.Direction.fromString(order), sortBy);
