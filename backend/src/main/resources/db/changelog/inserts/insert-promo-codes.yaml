@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-promo-codes
+      author: alwaysintilte
+      changes:
+        - insert:
+            tableName: promo_codes
+            columns:
+              - column: { name: code, value: "SAVE10" }
+              - column: { name: discount_percentage, valueNumeric: 10 }
+              - column: { name: is_active, valueBoolean: true }
+        - insert:
+            tableName: promo_codes
+            columns:
+              - column: { name: code, value: "SAVE20" }
+              - column: { name: discount_percentage, valueNumeric: 20 }
+              - column: { name: is_active, valueBoolean: true }

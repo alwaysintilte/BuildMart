@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-product-images
+      author: alwaysintilte
+      changes:
+        - insert:
+            tableName: product_images
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Exterior Paint Set')" }
+              - column: { name: image_url, value: "../images/paint.jpg" }
+        - insert:
+            tableName: product_images
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Plywood Sheets')" }
+              - column: { name: image_url, value: "../images/plywood.jpg" }
+        - insert:
+            tableName: product_images
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Premium Cement Bags')" }
+              - column: { name: image_url, value: "../images/cement.jpg" }
+        - insert:
+            tableName: product_images
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Premium Lumber Planks')" }
+              - column: { name: image_url, value: "../images/planks.jpg" }
+        - insert:
+            tableName: product_images
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Red Clay Bricks')" }
+              - column: { name: image_url, value: "../images/bricks.jpg" }
+        - insert:
+            tableName: product_images
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Steel I-Beams')" }
+              - column: { name: image_url, value: "../images/i-beams.jpg" }

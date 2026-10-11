@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-promo-codes-table
+      author: alwaysintilte
+      changes:
+        - createTable:
+            tableName: promo_codes
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: TEXT
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_promo_codes_code
+              - column:
+                  name: discount_percentage
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
