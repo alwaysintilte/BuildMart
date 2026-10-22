@@ -43,20 +43,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-        } catch (ExpiredJwtException e) {
-            request.setAttribute("jwt_error", "Expired");
-            request.setAttribute("jwt_error_message", e.getMessage());
-        } catch (SignatureException e) {
-            request.setAttribute("jwt_error", "Invalid_signature");
-            request.setAttribute("jwt_error_message", e.getMessage());
-        } catch (MalformedJwtException e) {
-            request.setAttribute("jwt_error", "Malformed");
-            request.setAttribute("jwt_error_message", e.getMessage());
-        } catch (UsernameNotFoundException e) {
-            request.setAttribute("jwt_error", "User_not_found");
+        } catch (ExpiredJwtException | SignatureException | MalformedJwtException | UsernameNotFoundException e) {
             request.setAttribute("jwt_error_message", e.getMessage());
         } catch (Exception e) {
-            request.setAttribute("jwt_error", "Unknown");
             request.setAttribute("jwt_error_message", e.getMessage());
         }
         chain.doFilter(request, response);
