@@ -2,6 +2,11 @@ package com.example.buildMart.controllers;
 
 import com.example.buildMart.dtos.responses.ProductResponse;
 import com.example.buildMart.services.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,10 +21,22 @@ import java.math.BigDecimal;
 @RequestMapping("/api/products")
 @AllArgsConstructor
 @Validated
+@Tag(
+        name = "Products",
+        description = "Каталог товаров, поиск, фильтрация и управление товарами"
+)
 public class ProductController {
 
     private ProductService productService;
 
+    @Operation(
+            summary = "Получить каталог товаров",
+            description = "Возвращает товары с пагинацией, поиском, фильтрацией и сортировкой"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Каталог получен"),
+            @ApiResponse(responseCode = "400", description = "Некорректные параметры запроса")
+    })
     @GetMapping("/")
     public ResponseEntity<Page<ProductResponse>> findAll(
             @RequestParam(defaultValue = "0")
@@ -59,17 +76,45 @@ public class ProductController {
         return new ResponseEntity<>(productService.findAll(page, limit, search, minPrice, maxPrice, minRating, sortBy, order), HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Удалить товар",
+            description = "Удаляет товар по ID. Доступно только ADMIN"
+    )
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Товар удалён"),
+            @ApiResponse(responseCode = "401", description = "Требуется авторизация"),
+            @ApiResponse(responseCode = "403", description = "Недостаточно прав"),
+            @ApiResponse(responseCode = "404", description = "Товар не найден"),
+            @ApiResponse(responseCode = "409", description = "Удаление нарушает ограничения базы данных")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable @Positive Long id){
         productService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Получить товар по ID",
+            description = "Возвращает товар, его изображения и характеристики"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Товар найден"),
+            @ApiResponse(responseCode = "404", description = "Товар не найден")
+    })
     @GetMapping("/id/{id}")
     public ResponseEntity<ProductResponse> findById(@PathVariable @Positive Long id){
         return new ResponseEntity<>(productService.findById(id), HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Получить товары со скидкой",
+            description = "Возвращает товары с фильтрацией по минимальной скидке"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Товары получены"),
+            @ApiResponse(responseCode = "400", description = "Некорректные параметры запроса")
+    })
     @GetMapping("/discount")
     public ResponseEntity<Page<ProductResponse>> findByDiscount(
             @RequestParam(defaultValue = "0")
