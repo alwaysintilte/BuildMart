@@ -40,7 +40,7 @@ public class ProductController {
     @GetMapping("/")
     public ResponseEntity<Page<ProductResponse>> findAll(
             @RequestParam(defaultValue = "0")
-            @Min(value = 1, message = "page must be >= 1")
+            @Min(value = 0, message = "page must be >= 0")
             Integer page,
 
             @RequestParam(defaultValue = "6")
