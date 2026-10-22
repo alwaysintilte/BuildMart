@@ -6,6 +6,7 @@ import com.example.buildMart.exceptions.types.NotFoundException;
 import com.example.buildMart.mappers.interfaces.ProductMapper;
 import com.example.buildMart.models.Product;
 import com.example.buildMart.repositories.ProductRepository;
+import com.example.buildMart.specifications.ProductSpecifications;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +41,13 @@ public class ProductService {
         }
         Sort sort = Sort.by(Sort.Direction.fromString(order), sortBy);
         Pageable pageable = PageRequest.of(page, limit, sort);
-        Page<Product> products = productRepository.findAll(search, minPrice, maxPrice, minRating, pageable);
+        Specification<Product> specification = Specification.allOf(
+                ProductSpecifications.titleContains(search),
+                ProductSpecifications.priceGreaterThanOrEqual(minPrice),
+                ProductSpecifications.priceLessThanOrEqual(maxPrice),
+                ProductSpecifications.ratingGreaterThanOrEqual(minRating)
+        );
+        Page<Product> products = productRepository.findAll(specification, pageable);
         List<Long> ids = products.map(product -> product.getId()).toList();
         if(!ids.isEmpty()){
             productRepository.findAllWithImagesByIdsIn(ids);
@@ -56,7 +64,13 @@ public class ProductService {
         }
         Sort sort = Sort.by(Sort.Direction.fromString(order), sortBy);
         Pageable pageable = PageRequest.of(page, limit, sort);
-        Page<Product> products = productRepository.findAll(search, minPrice, maxPrice, minRating, pageable);
+        Specification<Product> specification = Specification.allOf(
+                ProductSpecifications.titleContains(search),
+                ProductSpecifications.priceGreaterThanOrEqual(minPrice),
+                ProductSpecifications.priceLessThanOrEqual(maxPrice),
+                ProductSpecifications.ratingGreaterThanOrEqual(minRating)
+        );
+        Page<Product> products = productRepository.findAll(specification, pageable);
         List<Long> ids = products.map(product -> product.getId()).toList();
         if(!ids.isEmpty()){
             productRepository.findAllWithImagesByIdsIn(ids);
