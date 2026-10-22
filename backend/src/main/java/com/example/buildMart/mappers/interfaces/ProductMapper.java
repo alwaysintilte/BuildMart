@@ -16,8 +16,8 @@ public interface ProductMapper {
     @Mapping(target = "discount", source = "discount")
     @Mapping(target = "productCategory", expression = "java(product.getProductCategory().getLabel())")
     @Mapping(target = "description", source = "description")
+    @Mapping(target = "images", expression = "java(product.getImages().stream().map(com.example.buildMart.models.ProductImage::getUrl).toList())")
     @Mapping(target = "specifications", source = "specifications")
-    @Mapping(target = "images", expression = "java(product.getImages().stream().map(com.example.buildMart.models.ProductImage::getUrl).toList())")    @Mapping(target = "specifications", source = "specifications")
     ProductResponse toDto(Product product);
 
     List<ProductResponse> toDtoList(List<Product> productList);
