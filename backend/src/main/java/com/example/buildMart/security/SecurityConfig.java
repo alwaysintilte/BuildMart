@@ -3,8 +3,10 @@ package com.example.buildMart.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -25,6 +27,11 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) {
+        return configuration.getAuthenticationManager();
     }
 
     @Bean
@@ -59,10 +66,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/cart/**").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.POST, "/api/cart/**").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.PATCH, "/api/cart/**").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/cart/**").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/cart/**").hasAuthority("CUSTOMER")
+                        .requestMatchers(HttpMethod.POST, "/api/cart/**").hasAuthority("CUSTOMER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/cart/**").hasAuthority("CUSTOMER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/cart/**").hasAuthority("CUSTOMER")
 
                         .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
