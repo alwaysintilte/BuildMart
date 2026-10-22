@@ -2,6 +2,7 @@ package com.example.buildMart.services;
 
 import com.example.buildMart.dtos.requests.CartItemPatchRequest;
 import com.example.buildMart.dtos.requests.CartItemPostRequest;
+import com.example.buildMart.dtos.requests.CartPromoCodeRequest;
 import com.example.buildMart.dtos.responses.CartPromoCodeResponse;
 import com.example.buildMart.dtos.responses.CartResponse;
 import com.example.buildMart.exceptions.types.BadRequestException;
@@ -13,6 +14,8 @@ import com.example.buildMart.repositories.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 
 @Service
 @AllArgsConstructor
@@ -32,7 +35,7 @@ public class CartService {
 
     public CartResponse getCart(String email){
         User user = userService.findByEmailEntity(email);
-        Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new RuntimeException("Before getting cart add at least 1 product"));;
+        Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new NotFoundException("Before getting cart add at least 1 product"));;
         CartResponse cartResponse = cartMapper.toDto(cart);
         return cartResponse;
     }
@@ -54,12 +57,14 @@ public class CartService {
             Cart cart = cartRepository.findByUser(user).orElseGet(() -> {
                 Cart newCart = new Cart();
                 newCart.setUser(user);
+                newCart.setItems(new ArrayList<>());
                 return cartRepository.save(newCart);
             });
             cartItem = new CartItem();
             cartItem.setCart(cart);
             cartItem.setProduct(product);
             cartItem.setQuantity(cartItemPostRequest.getQuantity());
+            cart.getItems().add(cartItem);
         }
         cartItemRepository.save(cartItem);
         Cart cart = cartRepository.findByUser(user).orElse(null);
@@ -96,13 +101,13 @@ public class CartService {
     }
 
     @Transactional
-    public CartPromoCodeResponse applyPromo(String promo, String email){
+    public CartPromoCodeResponse applyPromo(CartPromoCodeRequest cartPromoCodeRequest, String email){
         User user = userService.findByEmailEntity(email);
         Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new NotFoundException("Before applying promocode add at least 1 product"));
         if(cart.getPromoCode() != null){
             throw new ConflictException("Promocode was already applied");
         }
-        PromoCode promoCode = promoCodeService.findByCodeEntity(promo);
+        PromoCode promoCode = promoCodeService.findByCodeEntity(cartPromoCodeRequest.getPromoCode());
         if(!promoCode.getIsActive()){
             throw new BadRequestException("Promocode is not active");
         }
