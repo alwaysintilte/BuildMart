@@ -20,4 +20,4 @@ databaseChangeLog:
   - include:
       file: db/changelog/inserts/insert-product-specifications.yaml
   - include:
-      file: db/changelog/changes/insert-promo-codes.yaml
+      file: db/changelog/inserts/insert-promo-codes.yaml
