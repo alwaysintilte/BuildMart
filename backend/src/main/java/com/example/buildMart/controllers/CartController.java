@@ -2,6 +2,7 @@ package com.example.buildMart.controllers;
 
 import com.example.buildMart.dtos.requests.CartItemPatchRequest;
 import com.example.buildMart.dtos.requests.CartItemPostRequest;
+import com.example.buildMart.dtos.requests.CartPromoCodeRequest;
 import com.example.buildMart.dtos.responses.CartPromoCodeResponse;
 import com.example.buildMart.dtos.responses.CartResponse;
 import com.example.buildMart.services.CartService;
@@ -79,7 +80,7 @@ public class CartController {
             @ApiResponse(responseCode = "404", description = "Товар отсутствует в корзине"),
             @ApiResponse(responseCode = "409", description = "Недостаточно товара на складе")
     })
-    @PatchMapping("/items/{id}")
+    @PatchMapping("/items/{productId}")
     public ResponseEntity<CartResponse> patchItem(
             @Valid @RequestBody CartItemPatchRequest cartItemPatchRequest,
             @PathVariable @Positive Long productId,
@@ -98,7 +99,7 @@ public class CartController {
             @ApiResponse(responseCode = "401", description = "Требуется авторизация"),
             @ApiResponse(responseCode = "404", description = "Товар отсутствует в корзине")
     })
-    @DeleteMapping("items/{id}")
+    @DeleteMapping("items/{productId}")
     public ResponseEntity<CartResponse> deleteItem(
             @PathVariable @Positive Long productId,
             Authentication authentication
@@ -120,10 +121,10 @@ public class CartController {
     })
     @PostMapping("/apply-promo")
     public ResponseEntity<CartPromoCodeResponse> applyPromo(
-            @RequestBody @NotBlank String promoCode,
+            @Valid @RequestBody CartPromoCodeRequest cartPromoCodeRequest,
             Authentication authentication
     ){
         String email = authentication.getName();
-        return new ResponseEntity<>(cartService.applyPromo(promoCode, email), HttpStatus.OK);
+        return new ResponseEntity<>(cartService.applyPromo(cartPromoCodeRequest, email), HttpStatus.OK);
     }
 }
