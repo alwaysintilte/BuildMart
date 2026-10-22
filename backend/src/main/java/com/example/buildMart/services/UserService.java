@@ -2,6 +2,9 @@ package com.example.buildMart.services;
 
 import com.example.buildMart.dtos.requests.UserAuthRequest;
 import com.example.buildMart.dtos.responses.JwtTokenResponse;
+import com.example.buildMart.exceptions.types.AlreadyExistsException;
+import com.example.buildMart.exceptions.types.InvalidCredentialsException;
+import com.example.buildMart.exceptions.types.NotFoundException;
 import com.example.buildMart.mappers.interfaces.UserMapper;
 import com.example.buildMart.models.User;
 import com.example.buildMart.models.enums.Role;
@@ -34,15 +37,11 @@ public class UserService {
 
     @Transactional
     public void registerUser(UserAuthRequest userAuthRequest){
-        userRepository.findByEmail(userAuthRequest.getEmail()).ifPresent(u -> {throw new RuntimeException("User already exists");});
+        userRepository.findByEmail(userAuthRequest.getEmail()).ifPresent(u -> {throw new AlreadyExistsException("User already exists");});
         User user = userMapper.toEntity(userAuthRequest);
         user.setPasswordHash(passwordEncoder.encode(userAuthRequest.getPassword()));
         user.setRole(Role.CUSTOMER);
-        try {
-            userRepository.save(user);
-        } catch (RuntimeException e) {
-            throw new RuntimeException("User already exists");
-        }
+        userRepository.save(user);
     }
 
     @Transactional(readOnly = true)
@@ -51,7 +50,7 @@ public class UserService {
         try {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userAuthRequest.getEmail(), userAuthRequest.getPassword()));
         } catch (AuthenticationException e) {
-            throw new RuntimeException("Invalid email or password");
+            throw new InvalidCredentialsException("Invalid email or password");
         }
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String jwt = jwtService.generateToken(userDetails);
@@ -59,7 +58,7 @@ public class UserService {
     }
 
     public User findByEmailEntity(String email){
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User not found"));
         return user;
     }
 }

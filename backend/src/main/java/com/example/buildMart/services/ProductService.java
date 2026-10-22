@@ -1,6 +1,8 @@
 package com.example.buildMart.services;
 
 import com.example.buildMart.dtos.responses.ProductResponse;
+import com.example.buildMart.exceptions.types.BadRequestException;
+import com.example.buildMart.exceptions.types.NotFoundException;
 import com.example.buildMart.mappers.interfaces.ProductMapper;
 import com.example.buildMart.models.Product;
 import com.example.buildMart.repositories.ProductRepository;
@@ -33,7 +35,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public Page<ProductResponse> findAll(Integer page, Integer limit, String search, BigDecimal minPrice, BigDecimal maxPrice, Double minRating, String sortBy, String order){
         if(minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0){
-            throw new IllegalArgumentException("min_price must be <= max_price");
+            throw new BadRequestException("min_price must be <= max_price");
         }
         Sort sort = Sort.by(Sort.Direction.fromString(order), sortBy);
         Pageable pageable = PageRequest.of(page, limit, sort);
@@ -50,7 +52,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public Page<Product> findAllEntities(Integer page, Integer limit, String search, BigDecimal minPrice, BigDecimal maxPrice, Double minRating, String sortBy, String order){
         if(minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0){
-            throw new IllegalArgumentException("min_price must be <= max_price");
+            throw new BadRequestException("min_price must be <= max_price");
         }
         Sort sort = Sort.by(Sort.Direction.fromString(order), sortBy);
         Pageable pageable = PageRequest.of(page, limit, sort);
@@ -70,14 +72,14 @@ public class ProductService {
     })
     @Transactional
     public void deleteById(Long id){
-        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        Product product = productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product not found"));
         productRepository.deleteById(id);
     }
 
     @Cacheable(value = "product_item", key = "#id")
     @Transactional(readOnly = true)
     public ProductResponse findById(Long id){
-        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        Product product = productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product not found"));
         List<Long> ids = List.of(product.getId());
         productRepository.findAllWithImagesByIdsIn(ids);
         productRepository.findAllWithSpecificationsByIdsIn(ids);
@@ -87,7 +89,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public Product findByIdEntity(Long id){
-        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        Product product = productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product not found"));
         List<Long> ids = List.of(product.getId());
         productRepository.findAllWithImagesByIdsIn(ids);
         productRepository.findAllWithSpecificationsByIdsIn(ids);

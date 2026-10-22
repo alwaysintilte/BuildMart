@@ -4,6 +4,9 @@ import com.example.buildMart.dtos.requests.CartItemPatchRequest;
 import com.example.buildMart.dtos.requests.CartItemPostRequest;
 import com.example.buildMart.dtos.responses.CartPromoCodeResponse;
 import com.example.buildMart.dtos.responses.CartResponse;
+import com.example.buildMart.exceptions.types.BadRequestException;
+import com.example.buildMart.exceptions.types.ConflictException;
+import com.example.buildMart.exceptions.types.NotFoundException;
 import com.example.buildMart.mappers.interfaces.CartMapper;
 import com.example.buildMart.models.*;
 import com.example.buildMart.repositories.*;
@@ -41,12 +44,12 @@ public class CartService {
         CartItem cartItem = cartItemRepository.findByCartUserIdAndProductId(user.getId(), cartItemPostRequest.getProductId()).orElse(null);
         if(cartItem != null){
             if(cartItem.getProduct().getStockQuantity() < cartItem.getQuantity() + cartItemPostRequest.getQuantity()){
-                throw new RuntimeException("Insufficient stock for requested quantity");
+                throw new ConflictException("Insufficient stock for requested quantity");
             }
             cartItem.setQuantity(cartItem.getQuantity() + cartItemPostRequest.getQuantity());
         } else {
             if(product.getStockQuantity() < cartItemPostRequest.getQuantity()){
-                throw new RuntimeException("Insufficient stock for requested quantity");
+                throw new ConflictException("Insufficient stock for requested quantity");
             }
             Cart cart = cartRepository.findByUser(user).orElseGet(() -> {
                 Cart newCart = new Cart();
@@ -69,7 +72,7 @@ public class CartService {
         User user = userService.findByEmailEntity(email);
         CartItem cartItem = cartItemRepository.findByCartUserIdAndProductId(user.getId(), productId).orElseThrow(() -> new RuntimeException("Unnable to find specified cart item"));
         if(cartItem.getProduct().getStockQuantity() < cartItemPatchRequest.getQuantity()){
-            throw new RuntimeException("Insufficient stock for requested quantity");
+            throw new ConflictException("Insufficient stock for requested quantity");
         }
         cartItem.setQuantity(cartItemPatchRequest.getQuantity());
         cartItemRepository.save(cartItem);
@@ -95,13 +98,13 @@ public class CartService {
     @Transactional
     public CartPromoCodeResponse applyPromo(String promo, String email){
         User user = userService.findByEmailEntity(email);
-        Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new RuntimeException("Before applying promocode add at least 1 product"));
+        Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new NotFoundException("Before applying promocode add at least 1 product"));
         if(cart.getPromoCode() != null){
-            throw new RuntimeException("Promocode was already applied");
+            throw new ConflictException("Promocode was already applied");
         }
         PromoCode promoCode = promoCodeService.findByCodeEntity(promo);
         if(!promoCode.getIsActive()){
-            throw new RuntimeException("Promocode is not active");
+            throw new BadRequestException("Promocode is not active");
         }
         cart.setPromoCode(promoCode);
         cartRepository.save(cart);
