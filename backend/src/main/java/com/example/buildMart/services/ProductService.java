@@ -5,6 +5,7 @@ import com.example.buildMart.exceptions.types.BadRequestException;
 import com.example.buildMart.exceptions.types.NotFoundException;
 import com.example.buildMart.mappers.interfaces.ProductMapper;
 import com.example.buildMart.models.Product;
+import com.example.buildMart.models.enums.ProductCategory;
 import com.example.buildMart.repositories.ProductRepository;
 import com.example.buildMart.specifications.ProductSpecifications;
 import lombok.AllArgsConstructor;
@@ -32,10 +33,10 @@ public class ProductService {
 
     @Cacheable(
             value = "products_catalog",
-            key = "{#page, #limit, #search, #minPrice, #maxPrice, #minRating, #sortBy, #order}"
+            key = "{#page, #limit, #search, #category, #minPrice, #maxPrice, #minRating, #sortBy, #order}"
     )
     @Transactional(readOnly = true)
-    public Page<ProductResponse> findAll(Integer page, Integer limit, String search, BigDecimal minPrice, BigDecimal maxPrice, Double minRating, String sortBy, String order){
+    public Page<ProductResponse> findAll(Integer page, Integer limit, String search, String category, BigDecimal minPrice, BigDecimal maxPrice, Double minRating, String sortBy, String order){
         if(minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0){
             throw new BadRequestException("min_price must be <= max_price");
         }
@@ -43,6 +44,7 @@ public class ProductService {
         Pageable pageable = PageRequest.of(page, limit, sort);
         Specification<Product> specification = Specification.allOf(
                 ProductSpecifications.titleContains(search),
+                ProductSpecifications.categoryEquals(category),
                 ProductSpecifications.priceGreaterThanOrEqual(minPrice),
                 ProductSpecifications.priceLessThanOrEqual(maxPrice),
                 ProductSpecifications.ratingGreaterThanOrEqual(minRating)
@@ -58,7 +60,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Product> findAllEntities(Integer page, Integer limit, String search, BigDecimal minPrice, BigDecimal maxPrice, Double minRating, String sortBy, String order){
+    public Page<Product> findAllEntities(Integer page, Integer limit, String search, String category, BigDecimal minPrice, BigDecimal maxPrice, Double minRating, String sortBy, String order){
         if(minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0){
             throw new BadRequestException("min_price must be <= max_price");
         }
@@ -66,6 +68,7 @@ public class ProductService {
         Pageable pageable = PageRequest.of(page, limit, sort);
         Specification<Product> specification = Specification.allOf(
                 ProductSpecifications.titleContains(search),
+                ProductSpecifications.categoryEquals(category),
                 ProductSpecifications.priceGreaterThanOrEqual(minPrice),
                 ProductSpecifications.priceLessThanOrEqual(maxPrice),
                 ProductSpecifications.ratingGreaterThanOrEqual(minRating)

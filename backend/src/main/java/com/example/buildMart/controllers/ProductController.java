@@ -52,6 +52,10 @@ public class ProductController {
             @Size(max = 200, message = "search must be <= 200 chars")
             String search,
 
+            @RequestParam(required = false)
+            @Size(max = 200, message = "category must be <= 200 chars")
+            String category,
+
             @RequestParam(name = "min_price", required = false)
             @PositiveOrZero(message = "min_price must be >= 0")
             BigDecimal minPrice,
@@ -73,7 +77,7 @@ public class ProductController {
             @Pattern(regexp = "asc|desc", flags = Pattern.Flag.CASE_INSENSITIVE, message = "order must be asc or desc")
             String order
     ){
-        return new ResponseEntity<>(productService.findAll(page, limit, search, minPrice, maxPrice, minRating, sortBy, order), HttpStatus.OK);
+        return new ResponseEntity<>(productService.findAll(page, limit, search, category, minPrice, maxPrice, minRating, sortBy, order), HttpStatus.OK);
     }
 
     @Operation(

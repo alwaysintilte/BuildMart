@@ -1,6 +1,8 @@
 package com.example.buildMart.specifications;
 
+import com.example.buildMart.exceptions.types.BadRequestException;
 import com.example.buildMart.models.Product;
+import com.example.buildMart.models.enums.ProductCategory;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
@@ -17,6 +19,15 @@ public class ProductSpecifications {
                                 cb.lower(root.get("title")),
                                 "%" + value.toLowerCase(Locale.ROOT) + "%"
                         ))
+                .orElseGet(() -> Specification.unrestricted());
+        return specification;
+    }
+
+    public static Specification<Product> categoryEquals(String category) {
+        Specification<Product> specification = Optional.ofNullable(category)
+                .map(value -> ProductCategory.fromLabel(category))
+                .map(value -> (Specification<Product>) (root, query, cb) ->
+                        cb.equal(root.get("productCategory"), value))
                 .orElseGet(() -> Specification.unrestricted());
         return specification;
     }
