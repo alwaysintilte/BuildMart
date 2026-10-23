@@ -7,6 +7,7 @@ let DATA = null;
 let PRODUCTS = null;
 let CURRENT_SIZE = 4;
 let CURRENT_PAGE = 0;
+let SEARCH = null;
 
 const sortSelector = document.getElementById("sort-selector");
 const shownProducts = document.getElementById("shown-products");
@@ -24,12 +25,16 @@ const maxValue = 400;
 
 const buttons = document.querySelectorAll("#rating-container [data-rating]");
 
+const desktopSearch = document.querySelector('header input[placeholder="Search products..."]');
+const mobileSearch = document.querySelector('#mobile-search input[placeholder="Search products..."]');
+
 function renderProductCards(products) {
     const container = document.getElementById("products-grid");
     if (!container) return;
 
     container.innerHTML = "";
     shownProducts.textContent = products.length;
+
     if (products.length === 0) {
         container.innerHTML = `
             <div class="text-center py-12">
@@ -49,20 +54,20 @@ function renderProductCards(products) {
             <div class="group bg-white border border-[#E5E7EB] rounded-lg overflow-hidden hover:shadow-lg transition">
                 <a href="product.html?id=${product.id}">
                     <div class="aspect-square overflow-hidden bg-gray-100">
-                        <img src="${product.image}" class="w-full h-full object-cover group-hover:scale-105 transition">
+                        <img src="${product.images?.[0] || ""}" class="w-full h-full object-cover group-hover:scale-105 transition">
                     </div>
                 </a>
                 <div class="p-4 flex flex-col gap-2">
                     <a href="product.html?id=${product.id}">
-                        <h3 class="text-[#101828] font-semibold text-lg group-hover:text-[#F54900] transition">${product.name}</h3>
+                        <h3 class="text-[#101828] font-semibold text-lg group-hover:text-[#F54900] transition">${product.title}</h3>
                     </a>
                     <div class="flex items-center gap-0.5">
                         ${Utils.renderRatingStars(product.rating, 16)}
                         <span class="ml-2 text-sm text-[#4A5565]">(${product.rating.toFixed(1)})</span>
                     </div>
-                    <p class="text-2xl font-bold text-[#101828]">$${product.price.toFixed(2)}</p>
-                    <p class="text-sm text-[#6A7282]">${product.category}</p>
-                    <button data-id="${product.id}" data-name="${product.name}" class="add-to-cart-button flex items-center justify-center gap-2 mt-2 w-full py-2 text-sm font-medium text-white bg-[#F54900] hover:bg-[#b53600]  rounded-lg transition">
+                    <p class="text-2xl font-bold text-[#101828]">$${Number(product.price).toFixed(2)}</p>
+                    <p class="text-sm text-[#6A7282]">${product.productCategory}</p>
+                    <button data-id="${product.id}" data-name="${product.title}" class="add-to-cart-button flex items-center justify-center gap-2 mt-2 w-full py-2 text-sm font-medium text-white bg-[#F54900] hover:bg-[#b53600]  rounded-lg transition">
                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4 "><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/>
                              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
                        </svg>
@@ -71,14 +76,26 @@ function renderProductCards(products) {
                 </div>
             </div>`;
     });
+
     const buttons = container.querySelectorAll(".add-to-cart-button");
+
     buttons.forEach(btn => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", async () => {
             const productId = btn.getAttribute("data-id");
             const productName = btn.getAttribute("data-name");
-            addToCart(productId);
-            Utils.showNotification("Added: "+productName);
-            updateCartBadge();
+
+            btn.disabled = true;
+
+            try {
+                await addToCart(productId);
+                Utils.showNotification("Added: " + productName);
+                await updateCartBadge();
+            } catch (error) {
+                console.error("Failed to add product:", error);
+                Utils.showNotification(error.message);
+            } finally {
+                btn.disabled = false;
+            }
         });
     });
 }
@@ -86,25 +103,50 @@ function renderProductCards(products) {
 buttons.forEach((btn) => {
     btn.addEventListener("click", async function() {
         const isChecked = btn.getAttribute("data-state") === "checked";
+
         buttons.forEach((b) => {
             b.setAttribute("data-state", "unchecked");
             b.setAttribute("aria-checked", "false");
             const span = b.querySelector("span[data-state]");
             if (span) span.setAttribute("data-state", "unchecked");
         });
-        if (isChecked){
+
+        if (isChecked) {
             resetPagination();
-            await getByParams(parseInt(minSlider.value), parseInt(maxSlider.value), null, CATEGORY, CURRENT_PAGE, CURRENT_SIZE, sortSelector.value);
+
+            await getByParams(
+                parseInt(minSlider.value),
+                parseInt(maxSlider.value),
+                null,
+                CATEGORY,
+                CURRENT_PAGE,
+                CURRENT_SIZE,
+                sortSelector.value
+            );
+
             renderProductCards(PRODUCTS);
             updatePagination();
             return;
         }
+
         btn.setAttribute("data-state", "checked");
         btn.setAttribute("aria-checked", "true");
+
         const span = btn.querySelector("span[data-state]");
         if (span) span.setAttribute("data-state", "checked");
+
         resetPagination();
-        await getByParams(parseInt(minSlider.value), parseInt(maxSlider.value), btn.getAttribute("data-rating"), CATEGORY, CURRENT_PAGE, CURRENT_SIZE, sortSelector.value);
+
+        await getByParams(
+            parseInt(minSlider.value),
+            parseInt(maxSlider.value),
+            btn.getAttribute("data-rating"),
+            CATEGORY,
+            CURRENT_PAGE,
+            CURRENT_SIZE,
+            sortSelector.value
+        );
+
         renderProductCards(PRODUCTS);
         updatePagination();
     });
@@ -113,6 +155,7 @@ buttons.forEach((btn) => {
 document.getElementById("filters_button").addEventListener("click", function() {
     const filters_div = document.getElementById("filters_div");
     const filters_button_text = document.getElementById("filters_button_text");
+
     if (filters_div.style.display === "none") {
         filters_button_text.textContent = "Hide Filters";
         filters_div.style.display = "block";
@@ -129,7 +172,19 @@ document.getElementById("clear_filters_button").addEventListener("click", functi
 minSlider.addEventListener("input", async function(e) {
     updateSlider(e);
     resetPagination();
-    await getByParams(parseInt(minSlider.value), parseInt(maxSlider.value), (document.querySelector('[id^="rating-"][data-state="checked"]') ? document.querySelector('[id^="rating-"][data-state="checked"]').getAttribute("data-rating") : null), CATEGORY, CURRENT_PAGE, CURRENT_SIZE, sortSelector.value);
+
+    await getByParams(
+        parseInt(minSlider.value),
+        parseInt(maxSlider.value),
+        document.querySelector('[id^="rating-"][data-state="checked"]')
+            ? document.querySelector('[id^="rating-"][data-state="checked"]').getAttribute("data-rating")
+            : null,
+        CATEGORY,
+        CURRENT_PAGE,
+        CURRENT_SIZE,
+        sortSelector.value
+    );
+
     renderProductCards(PRODUCTS);
     updatePagination();
 });
@@ -137,7 +192,19 @@ minSlider.addEventListener("input", async function(e) {
 maxSlider.addEventListener("input", async function(e) {
     updateSlider(e);
     resetPagination();
-    await getByParams(parseInt(minSlider.value), parseInt(maxSlider.value), (document.querySelector('[id^="rating-"][data-state="checked"]') ? document.querySelector('[id^="rating-"][data-state="checked"]').getAttribute("data-rating") : null), CATEGORY, CURRENT_PAGE, CURRENT_SIZE, sortSelector.value);
+
+    await getByParams(
+        parseInt(minSlider.value),
+        parseInt(maxSlider.value),
+        document.querySelector('[id^="rating-"][data-state="checked"]')
+            ? document.querySelector('[id^="rating-"][data-state="checked"]').getAttribute("data-rating")
+            : null,
+        CATEGORY,
+        CURRENT_PAGE,
+        CURRENT_SIZE,
+        sortSelector.value
+    );
+
     renderProductCards(PRODUCTS);
     updatePagination();
 });
@@ -154,119 +221,269 @@ function updateSlider(e) {
     } else if (e.target.id === "max-price") {
         if (minVal > maxVal) {
             maxVal = minVal;
-            maxSlider.value = maxVal;
+            maxSlider.value = minVal;
         }
     }
 
     minValueText.textContent = "$" + minVal;
     maxValueText.textContent = "$" + maxVal;
+
     sliderRange.style.left = (minVal / maxValue) * 100 + "%";
     sliderRange.style.right = (100 - (maxVal / maxValue) * 100) + "%";
 }
 
-function clearFilters(){
+function clearFilters() {
     const activeSelected = document.querySelector('[id^="rating-"][data-state="checked"]');
-    if(activeSelected){
+
+    if (activeSelected) {
         activeSelected.setAttribute("data-state", "unchecked");
         activeSelected.setAttribute("aria-checked", "false");
+
         const activeSelectedSpan = activeSelected.querySelector("span");
         activeSelectedSpan.setAttribute("data-state", "unchecked");
     }
 
     minSlider.value = minValue;
     maxSlider.value = maxValue;
+
     minValueText.textContent = "$" + minValue;
     maxValueText.textContent = "$" + maxValue;
-    sliderRange.style.left = 0 + "%";
-    sliderRange.style.right = 0 + "%";
 
-    initCatalogPage();
+    sliderRange.style.left = "0%";
+    sliderRange.style.right = "0%";
+
+    resetPagination();
+
+    getByParams(
+        parseInt(minSlider.value),
+        parseInt(maxSlider.value),
+        null,
+        CATEGORY,
+        CURRENT_PAGE,
+        CURRENT_SIZE,
+        sortSelector.value
+    ).then(() => {
+        renderProductCards(PRODUCTS);
+        updatePagination();
+    });
 }
 
 sortSelector.addEventListener("change", async function() {
-    await getByParams(parseInt(minSlider.value), parseInt(maxSlider.value), (document.querySelector('[id^="rating-"][data-state="checked"]') ? document.querySelector('[id^="rating-"][data-state="checked"]').getAttribute("data-rating") : null), CATEGORY, CURRENT_PAGE, CURRENT_SIZE, sortSelector.value);
+    resetPagination();
+
+    await getByParams(
+        parseInt(minSlider.value),
+        parseInt(maxSlider.value),
+        document.querySelector('[id^="rating-"][data-state="checked"]')
+            ? document.querySelector('[id^="rating-"][data-state="checked"]').getAttribute("data-rating")
+            : null,
+        CATEGORY,
+        CURRENT_PAGE,
+        CURRENT_SIZE,
+        sortSelector.value
+    );
+
     renderProductCards(PRODUCTS);
+    updatePagination();
 });
 
-function updatePagination(){
+function updatePagination() {
     const pageInfo = document.getElementById("page-info");
+
     pageInfo.textContent = "Page " + (CURRENT_PAGE + 1);
+
     prevBtn.disabled = false;
     nextBtn.disabled = false;
-    if(DATA.first === true){
+
+    if (DATA.first === true) {
         prevBtn.disabled = true;
     }
-    if(DATA.last === true){
+
+    if (DATA.last === true) {
         nextBtn.disabled = true;
     }
 }
 
-function resetPagination(){
+function resetPagination() {
     CURRENT_PAGE = 0;
 }
 
-prevBtn.addEventListener("click", async function(){
+prevBtn.addEventListener("click", async function() {
+    if (CURRENT_PAGE <= 0) return;
+
     CURRENT_PAGE = CURRENT_PAGE - 1;
-    await getByParams(parseInt(minSlider.value), parseInt(maxSlider.value), (document.querySelector('[id^="rating-"][data-state="checked"]') ? document.querySelector('[id^="rating-"][data-state="checked"]').getAttribute("data-rating") : null), CATEGORY, CURRENT_PAGE, CURRENT_SIZE, sortSelector.value);
+
+    await getByParams(
+        parseInt(minSlider.value),
+        parseInt(maxSlider.value),
+        document.querySelector('[id^="rating-"][data-state="checked"]')
+            ? document.querySelector('[id^="rating-"][data-state="checked"]').getAttribute("data-rating")
+            : null,
+        CATEGORY,
+        CURRENT_PAGE,
+        CURRENT_SIZE,
+        sortSelector.value
+    );
+
     renderProductCards(PRODUCTS);
     updatePagination();
 });
 
-nextBtn.addEventListener("click", async function(){
+nextBtn.addEventListener("click", async function() {
+    if (DATA.last === true) return;
+
     CURRENT_PAGE = CURRENT_PAGE + 1;
-    await getByParams(parseInt(minSlider.value), parseInt(maxSlider.value), (document.querySelector('[id^="rating-"][data-state="checked"]') ? document.querySelector('[id^="rating-"][data-state="checked"]').getAttribute("data-rating") : null), CATEGORY, CURRENT_PAGE, CURRENT_SIZE, sortSelector.value);
+
+    await getByParams(
+        parseInt(minSlider.value),
+        parseInt(maxSlider.value),
+        document.querySelector('[id^="rating-"][data-state="checked"]')
+            ? document.querySelector('[id^="rating-"][data-state="checked"]').getAttribute("data-rating")
+            : null,
+        CATEGORY,
+        CURRENT_PAGE,
+        CURRENT_SIZE,
+        sortSelector.value
+    );
+
     renderProductCards(PRODUCTS);
     updatePagination();
 });
 
-function addToCart(productId){
-    let cart = JSON.parse(localStorage.getItem("cart")) || {};
-    if (cart[productId]) {
-        cart[productId] = cart[productId] + 1;
+async function addToCart(productId) {
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+        throw new Error("Please log in before adding products to cart");
     }
-    else {
-        cart[productId] = 1;
-    }
-    localStorage.setItem("cart", JSON.stringify(cart));
+
+    await Api.addToCart(productId, 1, token);
 }
 
-function updateCartBadge() {
+async function updateCartBadge() {
     const badge = document.getElementById("cart-quantity-text");
-    const cart = JSON.parse(localStorage.getItem("cart")) || {};
-    let totalQuantity = 0;
-    Object.values(cart).forEach(quantity => {
-        totalQuantity += quantity;
-    });
-    badge.textContent = totalQuantity;
-    if (totalQuantity === 0) {
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+        badge.textContent = "0";
         badge.style.display = "none";
-    } else {
-        badge.style.display = "flex";
+        return;
+    }
+
+    try {
+        const cart = await Api.getCart(token);
+
+        let totalQuantity = 0;
+
+        if (Array.isArray(cart.items)) {
+            cart.items.forEach(item => {
+                totalQuantity += Number(item.quantity);
+            });
+        }
+
+        badge.textContent = totalQuantity;
+
+        if (totalQuantity === 0) {
+            badge.style.display = "none";
+        } else {
+            badge.style.display = "flex";
+        }
+    } catch (error) {
+        console.error("Failed to update cart badge:", error);
+        badge.style.display = "none";
     }
 }
 
-async function getByParams(minPrice, maxPrice, rating, category, page, size, sort){
-    DATA = await Api.getByParams(minPrice, maxPrice, rating, category, page, size, sort);
+async function getByParams(minPrice, maxPrice, rating, category, page, size, sort) {
+    DATA = await Api.getByParams(minPrice, maxPrice, rating, category, page, size, sort, SEARCH);
     PRODUCTS = DATA.content;
 }
 
-async function getAll(page, size, sort){
-    DATA = await Api.getAll(page, size, sort);
+async function getAll(page, size, sort) {
+    DATA = await Api.getAll(page, size, sort, SEARCH);
     PRODUCTS = DATA.content;
 }
 
 async function initCatalogPage() {
     const urlParams = new URLSearchParams(window.location.search);
     CATEGORY = urlParams.get("category");
-    if(CATEGORY){
-        await getByParams(null, null, null, CATEGORY, CURRENT_PAGE, CURRENT_SIZE, sortSelector.value);
-    } else {
-        await getAll(CURRENT_PAGE, CURRENT_SIZE, sortSelector.value);
-    }
+
+    await getByParams(
+        parseInt(minSlider.value),
+        parseInt(maxSlider.value),
+        document.querySelector('[id^="rating-"][data-state="checked"]')
+            ? document.querySelector('[id^="rating-"][data-state="checked"]').getAttribute("data-rating")
+            : null,
+        CATEGORY,
+        CURRENT_PAGE,
+        CURRENT_SIZE,
+        sortSelector.value
+    );
+
     renderProductCards(PRODUCTS);
     updatePagination();
-    updateCartBadge();
+    await updateCartBadge();
     Utils.initMobileHeader();
+    Utils.initAuthButtons();
 }
+
+if (desktopSearch) {
+    desktopSearch.addEventListener("change", async function() {
+        SEARCH = desktopSearch.value.trim();
+
+        if (mobileSearch) {
+            mobileSearch.value = SEARCH;
+        }
+
+        resetPagination();
+
+        await getByParams(
+            parseInt(minSlider.value),
+            parseInt(maxSlider.value),
+            document.querySelector('[id^="rating-"][data-state="checked"]')
+                ? document.querySelector('[id^="rating-"][data-state="checked"]').getAttribute("data-rating")
+                : null,
+            CATEGORY,
+            CURRENT_PAGE,
+            CURRENT_SIZE,
+            sortSelector.value
+        );
+
+        renderProductCards(PRODUCTS);
+        updatePagination();
+    });
+}
+
+if (mobileSearch) {
+    mobileSearch.addEventListener("change", async function() {
+        SEARCH = mobileSearch.value.trim();
+
+        if (desktopSearch) {
+            desktopSearch.value = SEARCH;
+        }
+
+        resetPagination();
+
+        await getByParams(
+            parseInt(minSlider.value),
+            parseInt(maxSlider.value),
+            document.querySelector('[id^="rating-"][data-state="checked"]')
+                ? document.querySelector('[id^="rating-"][data-state="checked"]').getAttribute("data-rating")
+                : null,
+            CATEGORY,
+            CURRENT_PAGE,
+            CURRENT_SIZE,
+            sortSelector.value
+        );
+
+        renderProductCards(PRODUCTS);
+        updatePagination();
+    });
+}
+
+document.getElementById("search-btn").addEventListener("click", function() {
+    const mobileSearchContainer = document.getElementById("mobile-search");
+    mobileSearchContainer.classList.toggle("hidden");
+});
 
 initCatalogPage();

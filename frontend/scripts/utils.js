@@ -80,4 +80,38 @@ export function initMobileHeader() {
     });
 }
 
+export function initAuthButtons() {
+    const token = sessionStorage.getItem("token");
 
+    const loginLink = document.getElementById("login-link");
+    const logoutButton = document.getElementById("logout-button");
+
+    const mobileLoginLink = document.getElementById("mobile-login-link");
+    const mobileLogoutButton = document.getElementById("mobile-logout-button");
+
+    if (loginLink) {
+        loginLink.style.display = token ? "none" : "";
+    }
+
+    if (logoutButton) {
+        logoutButton.style.display = token ? "block" : "none";
+
+        logoutButton.addEventListener("click", function() {
+            sessionStorage.removeItem("token");
+            window.location.href = "index.html";
+        });
+    }
+
+    if (mobileLoginLink) {
+        mobileLoginLink.style.display = token ? "none" : "block";
+    }
+
+    if (mobileLogoutButton) {
+        mobileLogoutButton.style.display = token ? "block" : "none";
+
+        mobileLogoutButton.addEventListener("click", function() {
+            sessionStorage.removeItem("token");
+            window.location.href = "index.html";
+        });
+    }
+}
