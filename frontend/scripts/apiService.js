@@ -1,4 +1,4 @@
-export const url = "https://buildmart-iyzh.onrender.com//api";
+export const url = "https://buildmart-iyzh.onrender.com/api";
 
 export async function getAll(page, size, sort, search = null) {
     const params = new URLSearchParams();
