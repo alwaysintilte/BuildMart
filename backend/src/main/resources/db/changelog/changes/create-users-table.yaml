@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-users-table
+      author: alwaysintilte
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: TEXT
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_users_email
+              - column:
+                  name: password_hash
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false

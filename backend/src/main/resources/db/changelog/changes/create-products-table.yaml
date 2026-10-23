@@ -1,0 +1,55 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-products-table
+      author: alwaysintilte
+      changes:
+        - createTable:
+            tableName: products
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rating
+                  type: DOUBLE
+                  defaultValueNumeric: 0.0
+              - column:
+                  name: price
+                  type: NUMERIC(19,4)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: discount
+                  type: INTEGER
+              - column:
+                  name: product_category
+                  type: TEXT
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: stock_quantity
+                  type: INTEGER
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_deleted
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false

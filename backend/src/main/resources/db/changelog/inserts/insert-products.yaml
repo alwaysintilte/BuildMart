@@ -1,0 +1,71 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-products
+      author: alwaysintilte
+      changes:
+        - insert:
+            tableName: products
+            columns:
+              - column: { name: title, value: "Exterior Paint Set" }
+              - column: { name: rating, valueNumeric: 3.5 }
+              - column: { name: price, valueNumeric: 45.99 }
+              - column: { name: discount, valueNumeric: 20 }
+              - column: { name: product_category, value: "PAINT_AND_COATINGS" }
+              - column: { name: description, value: "Professional-grade exterior paint set designed to withstand harsh weather conditions. This premium paint offers excellent coverage, durability, and color retention. Perfect for residential and commercial exterior surfaces." }
+              - column: { name: stock_quantity, valueNumeric: 10 }
+              - column: { name: created_at, valueComputed: CURRENT_TIMESTAMP }
+        - insert:
+            tableName: products
+            columns:
+              - column: { name: title, value: "Plywood Sheets" }
+              - column: { name: rating, valueNumeric: 4.5 }
+              - column: { name: price, valueNumeric: 52.99 }
+              - column: { name: discount, valueNumeric: 0 }
+              - column: { name: product_category, value: "WOOD_AND_LUMBER" }
+              - column: { name: description, value: "Versatile construction-grade plywood sheets suitable for a wide range of applications. These sheets are engineered for strength and dimensional stability, perfect for subfloors, roofing, walls, and general construction." }
+              - column: { name: stock_quantity, valueNumeric: 10 }
+              - column: { name: created_at, valueComputed: CURRENT_TIMESTAMP }
+        - insert:
+            tableName: products
+            columns:
+              - column: { name: title, value: "Premium Cement Bags" }
+              - column: { name: rating, valueNumeric: 5 }
+              - column: { name: price, valueNumeric: 24.99 }
+              - column: { name: discount, valueNumeric: 20 }
+              - column: { name: product_category, value: "CEMENT_AND_CONCRETE" }
+              - column: { name: description, value: "High-quality Portland cement bags designed for heavy-duty construction projects. Our premium cement offers exceptional strength, durability, and workability. Ideal for foundations, structural work, and general concrete applications. Each bag contains precisely measured and tested cement that meets international quality standards." }
+              - column: { name: stock_quantity, valueNumeric: 10 }
+              - column: { name: created_at, valueComputed: CURRENT_TIMESTAMP }
+        - insert:
+            tableName: products
+            columns:
+              - column: { name: title, value: "Premium Lumber Planks" }
+              - column: { name: rating, valueNumeric: 4.5 }
+              - column: { name: price, valueNumeric: 89.99 }
+              - column: { name: discount, valueNumeric: 20 }
+              - column: { name: product_category, value: "WOOD_AND_LUMBER" }
+              - column: { name: description, value: "Premium kiln-dried lumber planks perfect for all your woodworking and construction needs. These high-grade wooden planks are carefully selected for strength and appearance. Suitable for framing, decking, furniture making, and various carpentry projects." }
+              - column: { name: stock_quantity, valueNumeric: 10 }
+              - column: { name: created_at, valueComputed: CURRENT_TIMESTAMP }
+        - insert:
+            tableName: products
+            columns:
+              - column: { name: title, value: "Red Clay Bricks" }
+              - column: { name: rating, valueNumeric: 4 }
+              - column: { name: price, valueNumeric: 0.89 }
+              - column: { name: discount, valueNumeric: 0 }
+              - column: { name: product_category, value: "BRICKS_AND_BLOCKS" }
+              - column: { name: description, value: "Traditional red clay bricks manufactured to the highest standards. These durable bricks are perfect for walls, patios, pathways, and architectural features. Fire-hardened for exceptional strength and weather resistance." }
+              - column: { name: stock_quantity, valueNumeric: 10 }
+              - column: { name: created_at, valueComputed: CURRENT_TIMESTAMP }
+        - insert:
+            tableName: products
+            columns:
+              - column: { name: title, value: "Steel I-Beams" }
+              - column: { name: rating, valueNumeric: 5 }
+              - column: { name: price, valueNumeric: 349.99 }
+              - column: { name: discount, valueNumeric: 20 }
+              - column: { name: product_category, value: "STEEL_AND_METAL" }
+              - column: { name: description, value: "Heavy-duty structural steel I-beams engineered for maximum load-bearing capacity. These professional-grade beams are essential for large construction projects, building frames, and structural support applications." }
+              - column: { name: stock_quantity, valueNumeric: 10 }
+              - column: { name: created_at, valueComputed: CURRENT_TIMESTAMP }
