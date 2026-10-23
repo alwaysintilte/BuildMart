@@ -1,0 +1,226 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-product-specifications
+      author: alwaysintilte
+      changes:
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Exterior Paint Set')" }
+              - column: { name: name, value: "Volume" }
+              - column: { name: value, value: "5 gallons total" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Exterior Paint Set')" }
+              - column: { name: name, value: "Type" }
+              - column: { name: value, value: "100% Acrylic Latex" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Exterior Paint Set')" }
+              - column: { name: name, value: "Coverage" }
+              - column: { name: value, value: "400 sq ft per gallon" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Exterior Paint Set')" }
+              - column: { name: name, value: "Finish" }
+              - column: { name: value, value: "Satin" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Exterior Paint Set')" }
+              - column: { name: name, value: "Dry Time" }
+              - column: { name: value, value: "2-4 hours" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Exterior Paint Set')" }
+              - column: { name: name, value: "Colors" }
+              - column: { name: value, value: "Assorted neutral tones" }
+
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Plywood Sheets')" }
+              - column: { name: name, value: "Dimensions" }
+              - column: { name: value, value: "4' x 8'" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Plywood Sheets')" }
+              - column: { name: name, value: "Thickness" }
+              - column: { name: value, value: "3/4 inch" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Plywood Sheets')" }
+              - column: { name: name, value: "Grade" }
+              - column: { name: value, value: "CDX" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Plywood Sheets')" }
+              - column: { name: name, value: "Plies" }
+              - column: { name: value, value: "7-ply construction" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Plywood Sheets')" }
+              - column: { name: name, value: "Exposure" }
+              - column: { name: value, value: "Exterior grade" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Plywood Sheets')" }
+              - column: { name: name, value: "Veneer" }
+              - column: { name: value, value: "Softwood" }
+
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Premium Cement Bags')" }
+              - column: { name: name, value: "Weight" }
+              - column: { name: value, value: "50 lbs per bag" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Premium Cement Bags')" }
+              - column: { name: name, value: "Type" }
+              - column: { name: value, value: "Portland Cement Type I/II" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Premium Cement Bags')" }
+              - column: { name: name, value: "Compressive Strength" }
+              - column: { name: value, value: "3500 PSI at 28 days" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Premium Cement Bags')" }
+              - column: { name: name, value: "Setting Time" }
+              - column: { name: value, value: "2-4 hours initial set" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Premium Cement Bags')" }
+              - column: { name: name, value: "Coverage" }
+              - column: { name: value, value: "Approximately 0.45 cubic feet" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Premium Cement Bags')" }
+              - column: { name: name, value: "Storage Life" }
+              - column: { name: value, value: "6 months in sealed bag" }
+
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Premium Lumber Planks')" }
+              - column: { name: name, value: "Dimensions" }
+              - column: { name: value, value: "2\" x 6\" x 8'" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Premium Lumber Planks')" }
+              - column: { name: name, value: "Wood Type" }
+              - column: { name: value, value: "Douglas Fir" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Premium Lumber Planks')" }
+              - column: { name: name, value: "Grade" }
+              - column: { name: value, value: "Premium Select" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Premium Lumber Planks')" }
+              - column: { name: name, value: "Moisture Content" }
+              - column: { name: value, value: "15% kiln-dried" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Premium Lumber Planks')" }
+              - column: { name: name, value: "Treatment" }
+              - column: { name: value, value: "Pressure-treated option available" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Premium Lumber Planks')" }
+              - column: { name: name, value: "Quantity" }
+              - column: { name: value, value: "Sold individually" }
+
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Red Clay Bricks')" }
+              - column: { name: name, value: "Dimensions" }
+              - column: { name: value, value: "8\" x 4\" x 2.25\"" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Red Clay Bricks')" }
+              - column: { name: name, value: "Material" }
+              - column: { name: value, value: "Fire-hardened clay" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Red Clay Bricks')" }
+              - column: { name: name, value: "Compressive Strength" }
+              - column: { name: value, value: "3000+ PSI" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Red Clay Bricks')" }
+              - column: { name: name, value: "Water Absorption" }
+              - column: { name: value, value: "Less than 8%" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Red Clay Bricks')" }
+              - column: { name: name, value: "Color" }
+              - column: { name: value, value: "Classic red" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Red Clay Bricks')" }
+              - column: { name: name, value: "Weight" }
+              - column: { name: value, value: "4.5 lbs per brick" }
+
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Steel I-Beams')" }
+              - column: { name: name, value: "Length" }
+              - column: { name: value, value: "20 feet" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Steel I-Beams')" }
+              - column: { name: name, value: "Profile" }
+              - column: { name: value, value: "W10x49" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Steel I-Beams')" }
+              - column: { name: name, value: "Material" }
+              - column: { name: value, value: "ASTM A992 Grade 50 Steel" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Steel I-Beams')" }
+              - column: { name: name, value: "Weight" }
+              - column: { name: value, value: "980 lbs" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Steel I-Beams')" }
+              - column: { name: name, value: "Yield Strength" }
+              - column: { name: value, value: "50 ksi" }
+        - insert:
+            tableName: product_specifications
+            columns:
+              - column: { name: product_id, valueComputed: "(SELECT id FROM products WHERE title = 'Steel I-Beams')" }
+              - column: { name: name, value: "Finish" }
+              - column: { name: value, value: "Mill finish" }

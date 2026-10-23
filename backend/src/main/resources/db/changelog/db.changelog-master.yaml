@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changes/create-users-table.yaml
+  - include:
+      file: db/changelog/changes/create-products-table.yaml
+  - include:
+      file: db/changelog/changes/create-product-images-table.yaml
+  - include:
+      file: db/changelog/changes/create-product-specifications-table.yaml
+  - include:
+      file: db/changelog/changes/create-promo-codes-table.yaml
+  - include:
+      file: db/changelog/changes/create-carts-table.yaml
+  - include:
+      file: db/changelog/changes/create-cart-items-table.yaml
+  - include:
+      file: db/changelog/inserts/insert-products.yaml
+  - include:
+      file: db/changelog/inserts/insert-product-images.yaml
+  - include:
+      file: db/changelog/inserts/insert-product-specifications.yaml
+  - include:
+      file: db/changelog/inserts/insert-promo-codes.yaml
