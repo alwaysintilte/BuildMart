@@ -18,6 +18,7 @@ function updateCartBadge() {
 function initAboutPage(){
     updateCartBadge();
     Utils.initMobileHeader();
+    Utils.initAuthButtons();
 }
 
 initAboutPage();
