@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | BuildMart</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../styles/index.css">
+</head>
+<body class="bg-[#F9FAFB]">
+
+<div class="min-h-screen flex flex-col">
+
+    <header class="bg-white border-b border-[#E5E7EB]">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2">
+                <div class="size-10 rounded-[10px] bg-[#F54900] flex items-center justify-center">
+                    <span class="text-white font-bold text-xl">BM</span>
+                </div>
+                <span class="text-xl font-bold text-[#101828]">BuildMart</span>
+            </a>
+
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="text-[#364153] hover:text-[#F54900] transition">
+                    Back to Store
+                </a>
+                <button id="logout-button" class="text-red-600 hover:text-red-700 font-semibold">
+                    Log Out
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 md:px-6 lg:px-8 py-8">
+
+        <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
+            <div>
+                <h1 class="text-4xl font-bold text-[#101828]">Admin Panel</h1>
+                <p class="text-[#6A7282] mt-2">Manage BuildMart products</p>
+            </div>
+
+            <button id="add-product-button"
+                    class="px-6 py-3 bg-[#F54900] hover:bg-[#b53600] text-white font-semibold rounded-lg transition">
+                + Add Product
+            </button>
+        </div>
+
+        <p id="admin-message" class="hidden mb-6 p-4 rounded-lg"></p>
+
+        <div id="products-section">
+            <div class="bg-white border border-[#E5E7EB] rounded-lg p-4 mb-6">
+                <input id="admin-search"
+                       type="search"
+                       placeholder="Search products..."
+                       class="w-full px-4 py-3 border border-[#D1D5DC] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F54900]">
+            </div>
+
+            <div class="bg-white border border-[#E5E7EB] rounded-lg overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                    <tr class="text-sm text-[#364153]">
+                        <th class="p-4">Product</th>
+                        <th class="p-4">Category</th>
+                        <th class="p-4">Price</th>
+                        <th class="p-4">Stock</th>
+                        <th class="p-4">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="admin-products" class="divide-y divide-[#E5E7EB]"></tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-between items-center mt-6">
+                <button id="admin-prev"
+                        class="px-5 py-2 border border-[#D1D5DC] rounded-lg disabled:opacity-40">
+                    Previous
+                </button>
+
+                <span id="admin-page-info" class="text-[#364153]">Page 1</span>
+
+                <button id="admin-next"
+                        class="px-5 py-2 border border-[#D1D5DC] rounded-lg disabled:opacity-40">
+                    Next
+                </button>
+            </div>
+        </div>
+
+        <section id="product-form-section"
+                 class="hidden bg-white border border-[#E5E7EB] rounded-lg p-6 mt-6">
+
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="product-form-title" class="text-2xl font-bold text-[#101828]">
+                    Add Product
+                </h2>
+
+                <button id="cancel-product-button"
+                        class="text-[#6A7282] hover:text-[#101828]">
+                    Cancel
+                </button>
+            </div>
+
+            <form id="product-form" class="flex flex-col gap-5">
+
+                <input type="hidden" id="product-id">
+
+                <div>
+                    <label for="product-title" class="block font-medium mb-2">Title</label>
+                    <input id="product-title" type="text" required minlength="3" maxlength="255"
+                           class="w-full px-4 py-3 border rounded-lg">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="product-price" class="block font-medium mb-2">Price ($)</label>
+                        <input id="product-price" type="number" min="0.01" step="0.01" required
+                               class="w-full px-4 py-3 border rounded-lg">
+                    </div>
+
+                    <div>
+                        <label for="product-discount" class="block font-medium mb-2">Discount (%)</label>
+                        <input id="product-discount" type="number" min="0" max="100" value="0"
+                               class="w-full px-4 py-3 border rounded-lg">
+                    </div>
+
+                    <div>
+                        <label for="product-stock" class="block font-medium mb-2">Stock Quantity</label>
+                        <input id="product-stock" type="number" min="0" step="1" required
+                               class="w-full px-4 py-3 border rounded-lg">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="product-category" class="block font-medium mb-2">Category</label>
+                    <select id="product-category" required
+                            class="w-full px-4 py-3 border rounded-lg">
+                        <option value="Paint &amp; Coatings">Paint &amp; Coatings</option>
+                        <option value="Wood &amp; Lumber">Wood &amp; Lumber</option>
+                        <option value="Cement &amp; Concrete">Cement &amp; Concrete</option>
+                        <option value="Bricks &amp; Blocks">Bricks &amp; Blocks</option>
+                        <option value="Steel &amp; Metal">Steel &amp; Metal</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="product-description" class="block font-medium mb-2">Description</label>
+                    <textarea id="product-description" rows="5" maxlength="5000"
+                              class="w-full px-4 py-3 border rounded-lg"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-xl font-semibold text-[#101828]">Images</h3>
+
+                        <button id="add-image-button" type="button"
+                                class="text-[#F54900] font-semibold hover:underline">
+                            + Add Image
+                        </button>
+                    </div>
+
+                    <div id="product-images" class="flex flex-col gap-3"></div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-xl font-semibold text-[#101828]">Technical Specifications</h3>
+
+                        <button id="add-specification-button" type="button"
+                                class="text-[#F54900] font-semibold hover:underline">
+                            + Add Specification
+                        </button>
+                    </div>
+
+                    <div id="product-specifications" class="flex flex-col gap-3"></div>
+                </div>
+
+                <button id="save-product-button" type="submit"
+                        class="w-full py-3 bg-[#F54900] hover:bg-[#b53600] text-white font-semibold rounded-lg">
+                    Save Product
+                </button>
+
+            </form>
+        </section>
+    </main>
+</div>
+
+<script type="module" src="../scripts/adminPage.js"></script>
+</body>
+</html>
