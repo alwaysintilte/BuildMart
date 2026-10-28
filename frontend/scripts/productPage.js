@@ -14,6 +14,14 @@ function renderGallery(images) {
 
     if (!mainImage || !thumbnails) return;
 
+    if (images.length === 0) {
+        mainImage.src = "";
+        thumbnails.innerHTML = "";
+        document.getElementById("prev-btn").style.display = "none";
+        document.getElementById("next-btn").style.display = "none";
+        return;
+    }
+
     mainImage.src = images[0];
     thumbnails.innerHTML = "";
 
@@ -47,7 +55,7 @@ function updateGallery() {
     const mainImage = document.getElementById("main-image");
     const thumbs = document.getElementById("thumbnails")?.children;
 
-    if (!mainImage || !thumbs) return;
+    if (!mainImage || !thumbs || galleryImages.length === 0) return;
 
     mainImage.src = galleryImages[currentIndex];
 
@@ -56,7 +64,6 @@ function updateGallery() {
         thumbs[i].classList.toggle("border-transparent", i !== currentIndex);
     }
 }
-
 
 function initSpecsAccordion() {
     const trigger = document.getElementById("trigger");
@@ -88,155 +95,173 @@ function initSpecsAccordion() {
 }
 
 async function renderProduct(product) {
-    document.getElementById("product-name").textContent = product.name;
-    document.getElementById("nav-name").textContent = product.name;
-    document.getElementById("product-price").textContent = `$${product.price.toFixed(2)}`;
+    document.getElementById("product-name").textContent = product.title;
+    document.getElementById("nav-name").textContent = product.title;
+    document.getElementById("product-price").textContent = `$${Number(product.price).toFixed(2)}`;
     document.getElementById("product-description").textContent = product.description;
 
-    const images = [product.image, product.image, product.image];
+    const images = product.images || [];
     renderGallery(images);
 
     document.getElementById("product-rating-stars").innerHTML =
         Utils.renderRatingStars(product.rating, 24);
+
     document.getElementById("product-rating-text").textContent =
         `(${product.rating.toFixed(1)})`;
 
     const specsGrid = document.getElementById("grid");
     specsGrid.innerHTML = "";
 
-    Object.entries(product.technicalSpecifications).forEach(([key, value]) => {
+    (product.specifications || []).forEach(specification => {
         specsGrid.innerHTML += `
             <div class="flex flex-col space-y-1 pb-4 border-b border-gray-200">
-                <dt class="text-sm text-[#4A5565] uppercase tracking-wide">${key}</dt>
-                <dd class="text-base font-semibold text-[#101828]">${value}</dd>
+                <dt class="text-sm text-[#4A5565] uppercase tracking-wide">${specification.name}</dt>
+                <dd class="text-base font-semibold text-[#101828]">${specification.value}</dd>
             </div>`;
     });
 
     initSpecsAccordion();
 
-    const relatedIds = product.relatedProducts || [];
-    const relatedSection = document.getElementById("related-section");
-    const relatedContainer = document.getElementById("related-products");
+    // В ProductResponse отсутствует поле relatedProducts.
+    // Поэтому связанные товары пока не отображаются.
+    document.getElementById("related-section").style.display = "none";
+}
 
-    if (relatedIds.length === 0) {
-        relatedSection.style.display = "none";
+async function updateCartBadge() {
+    const badge = document.getElementById("cart-quantity-text");
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+        badge.textContent = "0";
+        badge.style.display = "none";
         return;
     }
 
-    relatedSection.style.display = "block";
-    relatedContainer.innerHTML = "";
+    try {
+        const cart = await Api.getCart(token);
 
-    for (const id of relatedIds) {
-        const related = await getById(id);
-        if (!related) return;
+        let totalQuantity = 0;
 
-        const card = document.createElement("a");
-        card.href = `product.html?id=${related.id}`;
-        card.className = "group bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition block";
+        if (Array.isArray(cart.items)) {
+            cart.items.forEach(item => {
+                totalQuantity += Number(item.quantity);
+            });
+        }
 
-        card.innerHTML = `
-             <div class="group bg-white border border-[#E5E7EB] rounded-lg overflow-hidden hover:shadow-lg transition">
-                    <a href="product.html?id=${related.id}">
-                        <div class="aspect-square overflow-hidden bg-gray-100">
-                            <img src="${related.image}" class="w-full h-full object-cover group-hover:scale-105 transition">
-                        </div>
-                    </a>
+        badge.textContent = totalQuantity;
 
-                    <div class="p-4 flex flex-col gap-2">
-                        <a href="product.html?id=${related.id}">
-                            <h3 class="text-[#101828] font-semibold text-lg group-hover:text-[#F54900] transition">${related.name}</h3>
-                        </a>
-
-                        <div class="flex items-center gap-0.5">
-                            ${Utils.renderRatingStars(related.rating, 16)}
-                            <span class="ml-2 text-sm text-[#4A5565]">(${related.rating.toFixed(1)})</span>
-                        </div>
-
-                        <p class="text-xl font-bold text-[#101828]">$${related.price.toFixed(2)}</p>
-                    </div>
-        `;
-
-        relatedContainer.appendChild(card);
-    }
-}
-
-function updateCartBadge() {
-    const badge = document.getElementById("cart-quantity-text");
-    const cart = JSON.parse(localStorage.getItem("cart")) || {};
-    let totalQuantity = 0;
-    Object.values(cart).forEach(quantity => {
-        totalQuantity += quantity;
-    });
-    badge.textContent = totalQuantity;
-    if (totalQuantity === 0) {
+        if (totalQuantity === 0) {
+            badge.style.display = "none";
+        } else {
+            badge.style.display = "flex";
+        }
+    } catch (error) {
+        console.error("Failed to update cart badge:", error);
         badge.style.display = "none";
-    } else {
-        badge.style.display = "flex";
     }
 }
 
-document.getElementById("reduce-quantity-button").addEventListener("click", function(){
+document.getElementById("reduce-quantity-button").addEventListener("click", function() {
     const quantityInput = document.getElementById("quantity-input");
-    quantityInput.value = parseInt(quantityInput.value)-1;
+
+    const quantity = parseInt(quantityInput.value);
+
+    if (quantity > 1) {
+        quantityInput.value = quantity - 1;
+    }
 });
 
-document.getElementById("add-quantity-button").addEventListener("click", function(){
+document.getElementById("add-quantity-button").addEventListener("click", function() {
     const quantityInput = document.getElementById("quantity-input");
-    quantityInput.value = parseInt(quantityInput.value)+1;
+
+    const quantity = parseInt(quantityInput.value) || 1;
+
+    quantityInput.value = quantity + 1;
 });
 
-document.getElementById("add-to-cart-button").addEventListener("click", function(){
+document.getElementById("add-to-cart-button").addEventListener("click", async function() {
     const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get('id');
+    const productId = urlParams.get("id");
     const quantity = parseInt(document.getElementById("quantity-input").value);
     const productName = document.getElementById("product-name").textContent;
-    addToCart(productId, quantity);
-    Utils.showNotification("Added " + productName + " to cart");
-    updateCartBadge();
+
+    try {
+        await addToCart(productId, quantity);
+        Utils.showNotification("Added " + productName + " to cart");
+        await updateCartBadge();
+    } catch (error) {
+        console.error("Failed to add product:", error);
+        Utils.showNotification(error.message);
+    }
 });
 
-document.getElementById("buy-now-button").addEventListener("click", function(){
+document.getElementById("buy-now-button").addEventListener("click", async function() {
     const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get('id');
+    const productId = urlParams.get("id");
     const quantity = parseInt(document.getElementById("quantity-input").value);
-    const productName = document.getElementById("product-name").textContent;
-    addToCart(productId, quantity);
-    Utils.showNotification("Added " + productName + " to cart");
-    window.location.href = "/cart.html";
+
+    try {
+        await addToCart(productId, quantity);
+        window.location.href = "cart.html";
+    } catch (error) {
+        console.error("Failed to add product:", error);
+        Utils.showNotification(error.message);
+    }
 });
 
-function addToCart(productId, quantity){
-    let cart = JSON.parse(localStorage.getItem("cart")) || {};
-    if (cart[productId]) {
-        cart[productId] = cart[productId] + quantity;
+async function addToCart(productId, quantity) {
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+        throw new Error("Please log in before adding products to cart");
     }
-    else {
-        cart[productId] = quantity;
+
+    if (!Number.isInteger(quantity) || quantity < 1) {
+        throw new Error("Quantity must be at least 1");
     }
-    localStorage.setItem("cart", JSON.stringify(cart));
+
+    await Api.addToCart(productId, quantity, token);
 }
 
-async function getById(id){
+async function getById(id) {
     const DATA = await Api.getById(id);
     return DATA;
 }
 
 async function initProductPage() {
     const id = Utils.getProductIdFromUrl();
-    const product = await getById(id);
-    if (!product) {
+
+    try {
+        const product = await getById(id);
+
+        if (!product) {
+            document.getElementById("product-page").innerHTML = `
+                <div class="text-center">
+                    <h1 class="mb-4">Product Not Found</h1>
+                    <a class="text-[#F54900] hover:text-[#b53600]" href="index.html">
+                        Return to Catalog
+                    </a>
+                </div>`;
+            return;
+        }
+
+        await renderProduct(product);
+        await updateCartBadge();
+        Utils.initMobileHeader();
+        Utils.initAuthButtons();
+
+    } catch (error) {
+        console.error("Failed to load product:", error);
+
         document.getElementById("product-page").innerHTML = `
             <div class="text-center">
-                <h1 class="mb-4">Product Not Found</h1>
-                <a class="text-[#F54900] hover:text-[#b53600]" href="index.html" data-discover="true">
+                <h1 class="mb-4">Failed to load product</h1>
+                <p>${error.message}</p>
+                <a class="text-[#F54900] hover:text-[#b53600]" href="index.html">
                     Return to Catalog
                 </a>
             </div>`;
-        return;
     }
-    await renderProduct(product);
-    updateCartBadge();
-    Utils.initMobileHeader();
 }
 
 initProductPage();

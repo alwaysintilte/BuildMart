@@ -45,6 +45,20 @@
                     0
                     </span>
                     </a>
+                    <a
+                            id="login-link"
+                            href="login.html"
+                            class="hidden md:block text-sm font-semibold text-[#364153] hover:text-[#F54900] transition"
+                    >
+                        Log In
+                    </a>
+
+                    <button
+                            id="logout-button"
+                            class="hidden text-sm font-semibold text-[#364153] hover:text-[#F54900] transition"
+                    >
+                        Log Out
+                    </button>
                     <button id="burger-btn" class="p-2 text-[#99A1AF] hover:text-[#F54900] transition-colors md:hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5 "><path d="M4 5h16"/>
                             <path d="M4 12h16"/><path d="M4 19h16"/>
@@ -64,6 +78,20 @@
             <a class="text-[#364153] hover:text-[#F54900]" href="categories.html">Categories</a>
             <a class="text-[#364153] hover:text-[#F54900]" href="deals.html">Deals</a>
             <a class="text-[#364153] hover:text-[#F54900]" href="about.html">About</a>
+            <a
+                    id="mobile-login-link"
+                    href="login.html"
+                    class="text-[#364153] hover:text-[#F54900]"
+            >
+                Log In
+            </a>
+
+            <button
+                    id="mobile-logout-button"
+                    class="hidden text-left text-[#364153] hover:text-[#F54900]"
+            >
+                Log Out
+            </button>
         </nav>
     </div>
     <main class="flex-1 bg-white text-[#4A5565]">
@@ -77,6 +105,66 @@
                 </p>
             </div>
             <div id="categories-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <a href="index.html?category=Paint%20%26%20Coatings"
+                   class="group relative rounded-lg aspect-video overflow-hidden border border-[#E5E7EB] hover:shadow-lg transition-shadow">
+                    <img src="https://lgpzuurybpvaufmtsvkm.supabase.co/storage/v1/object/public/product-images/paint.jpg"
+                         alt="Paint & Coatings"
+                         class="w-full h-full object-cover group-hover:scale-105 transition">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                        <div class="text-white">
+                            <h3 class="font-semibold text-xl">Paint & Coatings</h3>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="index.html?category=Wood%20%26%20Lumber"
+                   class="group relative rounded-lg aspect-video overflow-hidden border border-[#E5E7EB] hover:shadow-lg transition-shadow">
+                    <img src="https://lgpzuurybpvaufmtsvkm.supabase.co/storage/v1/object/public/product-images/plywood.jpg"
+                         alt="Wood & Lumber"
+                         class="w-full h-full object-cover group-hover:scale-105 transition">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                        <div class="text-white">
+                            <h3 class="font-semibold text-xl">Wood & Lumber</h3>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="index.html?category=Cement%20%26%20Concrete"
+                   class="group relative rounded-lg aspect-video overflow-hidden border border-[#E5E7EB] hover:shadow-lg transition-shadow">
+                    <img src="https://lgpzuurybpvaufmtsvkm.supabase.co/storage/v1/object/public/product-images/cement.jpg"
+                         alt="Cement & Concrete"
+                         class="w-full h-full object-cover group-hover:scale-105 transition">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                        <div class="text-white">
+                            <h3 class="font-semibold text-xl">Cement & Concrete</h3>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="index.html?category=Bricks%20%26%20Blocks"
+                   class="group relative rounded-lg aspect-video overflow-hidden border border-[#E5E7EB] hover:shadow-lg transition-shadow">
+                    <img src="https://lgpzuurybpvaufmtsvkm.supabase.co/storage/v1/object/public/product-images/bricks.jpg"
+                         alt="Bricks & Blocks"
+                         class="w-full h-full object-cover group-hover:scale-105 transition">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                        <div class="text-white">
+                            <h3 class="font-semibold text-xl">Bricks & Blocks</h3>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="index.html?category=Steel%20%26%20Metal"
+                   class="group relative rounded-lg aspect-video overflow-hidden border border-[#E5E7EB] hover:shadow-lg transition-shadow">
+                    <img src="https://lgpzuurybpvaufmtsvkm.supabase.co/storage/v1/object/public/product-images/i-beams.jpg"
+                         alt="Steel & Metal"
+                         class="w-full h-full object-cover group-hover:scale-105 transition">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                        <div class="text-white">
+                            <h3 class="font-semibold text-xl">Steel & Metal</h3>
+                        </div>
+                    </div>
+                </a>
 
             </div>
         </div>

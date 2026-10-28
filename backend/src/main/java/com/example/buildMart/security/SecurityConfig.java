@@ -63,15 +63,18 @@ public class SecurityConfig {
                 .authenticationProvider(provider)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/products/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/products/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/products/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/admin/**").hasAuthority("ADMIN")
 
                         .requestMatchers(HttpMethod.GET, "/api/cart/**").hasAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.POST, "/api/cart/**").hasAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.PATCH, "/api/cart/**").hasAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.DELETE, "/api/cart/**").hasAuthority("CUSTOMER")
 
-                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                         .anyRequest().authenticated()
                 ).exceptionHandling(ex -> ex
                         .authenticationEntryPoint(authenticationEntryPoint)
