@@ -36,4 +36,6 @@ async function initCategoriesPage() {
     Utils.initAuthButtons();
 }
 
-initCategoriesPage();
+if (!Utils.redirectAdmin()) {
+    initCategoriesPage();
+}

@@ -59,33 +59,42 @@ function renderProducts(products) {
         row.className = "text-sm";
 
         row.innerHTML = `
-            <td class="p-4">
-                <div class="flex items-center gap-3">
-                    <img src="${product.images?.[0]?.url || ""}"
-                         class="w-14 h-14 object-cover rounded-lg"
-                         alt="${product.title}">
-                    <div>
-                        <p class="font-semibold text-[#101828]">${product.title}</p>
-                        <p class="text-[#6A7282]">ID: ${product.id}</p>
+            <td>
+                <div class="admin-product-info">
+                    <img class="admin-product-image"
+                         alt="Product image">
+
+                    <div class="admin-product-details">
+                        <p class="admin-product-title"></p>
+                        <p class="admin-product-id">ID: ${product.id}</p>
                     </div>
                 </div>
             </td>
-            <td class="p-4">${product.productCategory}</td>
-            <td class="p-4">$${Number(product.price).toFixed(2)}</td>
-            <td class="p-4">${product.stockQuantity}</td>
-            <td class="p-4">
-                <div class="flex gap-3">
-                    <button class="edit-product text-[#F54900] font-semibold"
+
+            <td class="admin-category"></td>
+
+            <td>$${Number(product.price).toFixed(2)}</td>
+
+            <td>${product.stockQuantity}</td>
+
+            <td>
+                <div class="admin-actions">
+                    <button class="edit-product text-[#F54900]"
                             data-id="${product.id}">
                         Edit
                     </button>
-                    <button class="delete-product text-red-600 font-semibold"
+
+                    <button class="delete-product text-red-600"
                             data-id="${product.id}">
                         Delete
                     </button>
                 </div>
             </td>
         `;
+
+        row.querySelector(".admin-product-image").src = product.images?.[0]?.url || "";
+        row.querySelector(".admin-product-title").textContent = product.title;
+        row.querySelector(".admin-category").textContent = product.productCategory;
 
         container.appendChild(row);
     });
@@ -123,11 +132,13 @@ function addImage(id = null, url = "") {
 
     const row = document.createElement("div");
     row.className = "flex gap-2";
+
     if (id !== null) row.dataset.id = id;
 
     row.innerHTML = `
         <input type="url" required placeholder="Image URL"
                class="image-url flex-1 min-w-0 px-4 py-2 border rounded-lg">
+
         <button type="button" class="remove-image px-4 text-red-600 font-semibold">
             Remove
         </button>
@@ -147,13 +158,16 @@ function addSpecification(id = null, name = "", value = "") {
 
     const row = document.createElement("div");
     row.className = "grid grid-cols-1 md:grid-cols-12 gap-2";
+
     if (id !== null) row.dataset.id = id;
 
     row.innerHTML = `
         <input type="text" required placeholder="Name"
                class="spec-name md:col-span-5 px-4 py-2 border rounded-lg">
+
         <input type="text" required placeholder="Value"
                class="spec-value md:col-span-5 px-4 py-2 border rounded-lg">
+
         <button type="button" class="remove-spec md:col-span-2 text-red-600 font-semibold">
             Remove
         </button>
@@ -249,6 +263,7 @@ async function removeProduct(id) {
 }
 
 document.getElementById("add-product-button").addEventListener("click", createNewProduct);
+
 document.getElementById("cancel-product-button").addEventListener("click", closeProductForm);
 
 document.getElementById("add-image-button").addEventListener("click", function() {
@@ -319,6 +334,7 @@ productForm.addEventListener("submit", async function(event) {
         CURRENT_PAGE = 0;
 
         await loadProducts();
+
         showMessage(id ? "Product updated successfully" : "Product created successfully");
 
     } catch (error) {
@@ -372,7 +388,7 @@ document.getElementById("logout-button").addEventListener("click", function() {
 
 async function initAdminPage() {
     if (getRoleFromToken() !== "ADMIN") {
-        window.location.href = "login.html";
+        window.location.replace("index.html");
         return;
     }
 

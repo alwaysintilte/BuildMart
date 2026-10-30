@@ -486,4 +486,6 @@ document.getElementById("search-btn").addEventListener("click", function() {
     mobileSearchContainer.classList.toggle("hidden");
 });
 
-initCatalogPage();
+if (!Utils.redirectAdmin()) {
+    initCatalogPage();
+}

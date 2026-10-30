@@ -6,6 +6,149 @@
     <title>Admin Panel | BuildMart</title>
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../styles/index.css">
+
+    <style>
+        .admin-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid #E5E7EB;
+            border-radius: 10px;
+            background: white;
+        }
+
+        .admin-product-details {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .admin-table {
+            width: 100%;
+            min-width: 850px;
+            table-layout: fixed;
+            border-collapse: collapse;
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 16px;
+            text-align: left;
+            vertical-align: middle;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .admin-table th {
+            background: #F9FAFB;
+            color: #364153;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .admin-table th:nth-child(1) {
+            width: 40%;
+        }
+
+        .admin-table th:nth-child(2) {
+            width: 20%;
+        }
+
+        .admin-table th:nth-child(3) {
+            width: 13%;
+        }
+
+        .admin-table th:nth-child(4) {
+            width: 10%;
+        }
+
+        .admin-table th:nth-child(5) {
+            width: 17%;
+        }
+
+        .admin-product-info {
+            display: flex !important;
+            align-items: center;
+            gap: 16px;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .admin-product-image {
+            display: block !important;
+            width: 64px !important;
+            height: 64px !important;
+            min-width: 64px !important;
+            min-height: 64px !important;
+            max-width: 64px !important;
+            max-height: 64px !important;
+            flex: 0 0 64px !important;
+            object-fit: contain !important;
+            border-radius: 8px;
+            background: #F3F4F6;
+        }
+
+        .admin-product-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .admin-product-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #101828;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+            word-break: normal;
+        }
+
+        .admin-product-id {
+            font-size: 12px;
+            color: #6A7282;
+            margin-top: 4px;
+        }
+
+        .admin-category {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            line-height: 1.5;
+        }
+
+        .admin-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-actions button {
+            white-space: nowrap;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .admin-table tbody tr:hover {
+            background: #F9FAFB;
+        }
+
+        .admin-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .admin-table th,
+            .admin-table td {
+                padding: 12px;
+            }
+
+            .admin-product-image {
+                width: 52px;
+                height: 52px;
+                min-width: 52px;
+                max-width: 52px;
+                max-height: 52px;
+            }
+        }
+    </style>
 </head>
 <body class="bg-[#F9FAFB]">
 
@@ -13,21 +156,19 @@
 
     <header class="bg-white border-b border-[#E5E7EB]">
         <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-2">
+
+            <a href="admin.html" class="flex items-center gap-2">
                 <div class="size-10 rounded-[10px] bg-[#F54900] flex items-center justify-center">
                     <span class="text-white font-bold text-xl">BM</span>
                 </div>
                 <span class="text-xl font-bold text-[#101828]">BuildMart</span>
             </a>
 
-            <div class="flex items-center gap-4">
-                <a href="index.html" class="text-[#364153] hover:text-[#F54900] transition">
-                    Back to Store
-                </a>
-                <button id="logout-button" class="text-red-600 hover:text-red-700 font-semibold">
-                    Log Out
-                </button>
-            </div>
+            <button id="logout-button"
+                    class="text-red-600 hover:text-red-700 font-semibold">
+                Log Out
+            </button>
+
         </div>
     </header>
 
@@ -48,6 +189,7 @@
         <p id="admin-message" class="hidden mb-6 p-4 rounded-lg"></p>
 
         <div id="products-section">
+
             <div class="bg-white border border-[#E5E7EB] rounded-lg p-4 mb-6">
                 <input id="admin-search"
                        type="search"
@@ -55,18 +197,19 @@
                        class="w-full px-4 py-3 border border-[#D1D5DC] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F54900]">
             </div>
 
-            <div class="bg-white border border-[#E5E7EB] rounded-lg overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="bg-[#F9FAFB] border-b border-[#E5E7EB]">
-                    <tr class="text-sm text-[#364153]">
-                        <th class="p-4">Product</th>
-                        <th class="p-4">Category</th>
-                        <th class="p-4">Price</th>
-                        <th class="p-4">Stock</th>
-                        <th class="p-4">Actions</th>
+            <div class="admin-table-wrapper">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
-                    <tbody id="admin-products" class="divide-y divide-[#E5E7EB]"></tbody>
+
+                    <tbody id="admin-products"></tbody>
                 </table>
             </div>
 
@@ -83,6 +226,7 @@
                     Next
                 </button>
             </div>
+
         </div>
 
         <section id="product-form-section"
@@ -180,6 +324,7 @@
 
             </form>
         </section>
+
     </main>
 </div>
 
