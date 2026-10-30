@@ -1,4 +1,4 @@
-export const url = "https://buildmart-iyzh.onrender.com//api";
+export const url = "http://localhost:8080/api";
 
 export async function getAll(page, size, sort, search = null) {
     const params = new URLSearchParams();
@@ -395,7 +395,7 @@ export async function getAdminProductById(id, token) {
 
 export async function createProduct(product, token) {
     try {
-        const response = await fetch(`${url}/products/`, {
+        const response = await fetch(`${url}/products/admin/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -422,7 +422,7 @@ export async function createProduct(product, token) {
 
 export async function patchProduct(id, product, token) {
     try {
-        const response = await fetch(`${url}/products/id/${id}`, {
+        const response = await fetch(`${url}/products/admin/id/${id}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -449,7 +449,7 @@ export async function patchProduct(id, product, token) {
 
 export async function deleteProduct(id, token) {
     try {
-        const response = await fetch(`${url}/products/${id}`, {
+        const response = await fetch(`${url}/products/admin/${id}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${token}`
