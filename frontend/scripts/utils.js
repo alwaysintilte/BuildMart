@@ -115,3 +115,29 @@ export function initAuthButtons() {
         });
     }
 }
+
+export function redirectAdmin() {
+    const token = sessionStorage.getItem("token");
+
+    if (!token) return false;
+
+    try {
+        const payload = token.split(".")[1];
+        const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+        const claims = JSON.parse(atob(base64));
+
+        if (claims.exp && claims.exp * 1000 <= Date.now()) {
+            return false;
+        }
+
+        if (claims.role === "ADMIN") {
+            window.location.replace("admin.html");
+            return true;
+        }
+
+    } catch (error) {
+        console.error("Failed to read token:", error);
+    }
+
+    return false;
+}

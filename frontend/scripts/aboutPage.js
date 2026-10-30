@@ -21,4 +21,6 @@ function initAboutPage(){
     Utils.initAuthButtons();
 }
 
-initAboutPage();
+if (!Utils.redirectAdmin()) {
+    initAboutPage();
+}

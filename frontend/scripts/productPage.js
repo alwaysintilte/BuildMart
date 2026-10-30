@@ -264,4 +264,6 @@ async function initProductPage() {
     }
 }
 
-initProductPage();
+if (!Utils.redirectAdmin()) {
+    initProductPage();
+}

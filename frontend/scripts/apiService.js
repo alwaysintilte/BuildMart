@@ -333,3 +333,141 @@ export async function applyPromoCode(promoCode, token) {
         throw error;
     }
 }
+
+export async function getAdminProducts(page, limit, search, token) {
+    try {
+        const params = new URLSearchParams({
+            page: page,
+            limit: limit,
+            sort_by: "title",
+            order: "asc"
+        });
+
+        if (search) {
+            params.append("search", search);
+        }
+
+        const response = await fetch(`${url}/products/admin/?${params.toString()}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({
+                message: response.statusText
+            }));
+
+            throw new Error(errorData.error || errorData.message || `HTTP ${response.status}`);
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        console.error("API Request Failed:", error);
+        throw error;
+    }
+}
+
+export async function getAdminProductById(id, token) {
+    try {
+        const response = await fetch(`${url}/products/admin/id/${id}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({
+                message: response.statusText
+            }));
+
+            throw new Error(errorData.error || errorData.message || `HTTP ${response.status}`);
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        console.error("API Request Failed:", error);
+        throw error;
+    }
+}
+
+export async function createProduct(product, token) {
+    try {
+        const response = await fetch(`${url}/products/admin/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(product)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({
+                message: response.statusText
+            }));
+
+            throw new Error(errorData.error || errorData.message || `HTTP ${response.status}`);
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        console.error("API Request Failed:", error);
+        throw error;
+    }
+}
+
+export async function patchProduct(id, product, token) {
+    try {
+        const response = await fetch(`${url}/products/admin/id/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(product)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({
+                message: response.statusText
+            }));
+
+            throw new Error(errorData.error || errorData.message || `HTTP ${response.status}`);
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        console.error("API Request Failed:", error);
+        throw error;
+    }
+}
+
+export async function deleteProduct(id, token) {
+    try {
+        const response = await fetch(`${url}/products/admin/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({
+                message: response.statusText
+            }));
+
+            throw new Error(errorData.error || errorData.message || `HTTP ${response.status}`);
+        }
+
+        return true;
+
+    } catch (error) {
+        console.error("API Request Failed:", error);
+        throw error;
+    }
+}

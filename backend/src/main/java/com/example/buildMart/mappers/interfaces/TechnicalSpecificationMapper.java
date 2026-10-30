@@ -1,5 +1,6 @@
 package com.example.buildMart.mappers.interfaces;
 
+import com.example.buildMart.dtos.responses.TechnicalSpecificationFullResponse;
 import com.example.buildMart.dtos.responses.TechnicalSpecificationResponse;
 import com.example.buildMart.models.TechnicalSpecification;
 import org.mapstruct.Mapper;
@@ -18,6 +19,11 @@ public interface TechnicalSpecificationMapper {
     @Mapping(target = "name", source = "name")
     @Mapping(target = "value", source = "value")
     TechnicalSpecificationResponse toDto(TechnicalSpecification technicalSpecification);
+
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "value", source = "value")
+    TechnicalSpecificationFullResponse toFullDto(TechnicalSpecification technicalSpecification);
 
     List<TechnicalSpecificationResponse> toDtoList(List<TechnicalSpecification> technicalSpecificationList);
 }
