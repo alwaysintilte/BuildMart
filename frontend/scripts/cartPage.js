@@ -343,4 +343,6 @@ async function initCartPage() {
     Utils.initAuthButtons();
 }
 
-initCartPage();
+if (!Utils.redirectAdmin()) {
+    initCartPage();
+}

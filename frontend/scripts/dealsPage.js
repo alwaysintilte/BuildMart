@@ -133,4 +133,6 @@ async function initDealsPage() {
     Utils.initAuthButtons();
 }
 
-initDealsPage();
+if (!Utils.redirectAdmin()) {
+    initDealsPage();
+}

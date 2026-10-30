@@ -21,9 +21,17 @@ loginForm.addEventListener("submit", async function(event) {
             throw new Error("Server did not return an access token");
         }
 
+        const payload = response.token.split(".")[1];
+        const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+        const claims = JSON.parse(atob(base64));
+
         sessionStorage.setItem("token", response.token);
 
-        window.location.href = "index.html";
+        if (claims.role === "ADMIN") {
+            window.location.href = "admin.html";
+        } else {
+            window.location.href = "index.html";
+        }
 
     } catch (error) {
         loginError.textContent = error.message;
